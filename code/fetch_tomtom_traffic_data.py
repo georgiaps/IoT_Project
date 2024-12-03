@@ -9,8 +9,7 @@ TRAFFIC_FLOW_URL = "https://api.tomtom.com/traffic/services/4/flowSegmentData/ab
 '''TRAFFIC_INCIDENTS_URL = "https://api.tomtom.com/traffic/services/5/incidentDetails"'''
 
 # Define the coordinates for the area of interest
-#POINT = "38.258117,21.747959"  # Latitude,Longitude for Traffic Flow
-POINT = "38.262129,21.750356"
+POINT = "38.255539,21.747222"  # Latitude,Longitude for Traffic Flow ston komvo agias sofias, ethnikh odos
 '''BBOX = "38.265478,21.752883,38.256404,21.744566"  # Bounding box (lon1,lat1,lon2,lat2) for Traffic Incidents'''
 
 # Define the directory to save the JSON files
@@ -42,6 +41,8 @@ def fetch_traffic_flow():
 
             # Add the calculated percentage to the data
             flow_segment_data["trafficPercentage"] = traffic_percentage
+
+        flow_segment_data["time"] = datetime.now().strftime("%X")
 
         # Save the updated data to a JSON file
         with open(TRAFFIC_FLOW_FILE, "w") as file:

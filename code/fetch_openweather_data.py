@@ -31,6 +31,10 @@ def save_weather_data(data, city, output_dir):
     """
     Save weather data to a JSON file.
     """
+
+    # Add timestamp to the data
+    data["time"] = datetime.now().strftime("%X")
+
     # Ensure the output directory exists
     os.makedirs(output_dir, exist_ok=True)
     

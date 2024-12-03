@@ -19,6 +19,12 @@ def extract_traffic_value(json_file_path):
         data = json.load(file)
     return data["flowSegmentData"]["trafficPercentage"]  # Adjust key path if necessary
 
+def extract_time_value(json_file_path):
+    """Extract 'time' from a single JSON file."""
+    with open(json_file_path, "r") as file:
+        data = json.load(file)
+    return data["flowSegmentData"]["time"]  # Adjust key path if necessary
+
 # Function to process all JSON files in a directory
 def process_directory(directory_path, extract_function):
     values = []
@@ -44,10 +50,12 @@ try:
     # Generate lists of values
     rain_values = process_directory(RAIN_DATA_PATH, extract_rain_value)
     traffic_values = process_directory(TRAFFIC_DATA_PATH, extract_traffic_value)
+    time_values = process_directory(TRAFFIC_DATA_PATH, extract_time_value)
 
     # Display results
     print("Rain Data (mm):", rain_values)
     print("Traffic Data (%):", traffic_values)
+    print("Time Data :", time_values)
 
     # Calculate and display correlation
     if len(rain_values) > 1 and len(traffic_values) > 1:
