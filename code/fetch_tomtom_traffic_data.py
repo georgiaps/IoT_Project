@@ -10,6 +10,7 @@ TRAFFIC_FLOW_URL = "https://api.tomtom.com/traffic/services/4/flowSegmentData/ab
 
 # Define the coordinates for the area of interest
 POINT = "38.255539,21.747222"  # Latitude,Longitude for Traffic Flow ston komvo agias sofias, ethnikh odos
+#POINT = "38.246710,21.734996"
 '''BBOX = "38.265478,21.752883,38.256404,21.744566"  # Bounding box (lon1,lat1,lon2,lat2) for Traffic Incidents'''
 
 # Define the directory to save the JSON files
