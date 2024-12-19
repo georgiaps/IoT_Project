@@ -18,7 +18,7 @@ POINTS = {
 # FIWARE Context Broker
 fiware_host = "http://150.140.186.118:1026/v2/entities"
 fiware_service_path = "/microclimateandtraffic"
-entity_type = "TrafficData"
+entity_type = "omada08_TrafficData"
 
 def fetch_traffic_flow(coordinates):
     try:
@@ -103,7 +103,7 @@ def transform_traffic_data(traffic_data, point):
         "traffic_percentage": {"value": flow_data.get("trafficPercentage"), "type": "Float"},
         "coordinates": {"value": point["coordinates"], "type": "Text"},
         "traffic_point": {"value": point["name"], "type": "Text"},
-        "timestamp": {"value": datetime.now(tz=timezone.utc).isoformat(), "type": "Text"}
+        "timestamp": {"value": datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat(), "type": "DateTime"}
     }
     return attributes
 

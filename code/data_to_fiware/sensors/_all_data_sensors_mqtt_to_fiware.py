@@ -89,18 +89,18 @@ def process_func():
             "humidity": {"value": sensor_data["sensor1"].get('humidity'), "type": "Number"},
             "rain": {"value": sensor_data["sensor1"].get('rain'), "type": "Number"},
             "temperature": {"value": sensor_data["sensor1"].get('temperature'), "type": "Number"},
-            "pressure": {"value": sensor_data["sensor1"].get('pressure'), "type": "Number"},
+            "pressure": {"value": (sensor_data["sensor1"].get('pressure'))/100, "type": "Number"},
             "irradiation": {"value": sensor_data["sensor1"].get('irradiation'), "type": "Number"}
     })
     if sensor_data["sensor2"]:
         unified_data.update({
-            "wind_direction": {"value": sensor_data["sensor2"].get('wind_direction'), "type": "Text"},
+            "wind_direction": {"value": sensor_data["sensor2"].get('wind_direction'), "type": "Number"},
             "wind_speed": {"value": sensor_data["sensor2"].get('wind_speed'), "type": "Number"}
     })
     if sensor_data["sensor3"]:
         unified_data.update({
-            "noise_level_A": {"value": sensor_data["sensor3"].get('noise_level_A'), "type": "Number"},
-            "noise_level_C": {"value": sensor_data["sensor3"].get('noise_level_C'), "type": "Number"},
+            "noise_level_A": {"value": float(sensor_data["sensor3"].get('noise_level_A')), "type": "Number"},
+            "noise_level_C": {"value": float(sensor_data["sensor3"].get('noise_level_C')), "type": "Number"},
             "coordinates": {"value": {"latitude": sensor_data["sensor3"].get('latitude'), "longitude": sensor_data["sensor3"].get('longitude')}, "type": "Point"}
     })
     if sensor_data["sensor4"]:

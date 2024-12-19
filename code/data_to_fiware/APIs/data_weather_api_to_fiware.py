@@ -10,8 +10,8 @@ BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 # FIWARE Context Broker
 fiware_host = "http://150.140.186.118:1026/v2/entities"  # Replace with your FIWARE context broker URL
 fiware_service_path = "/microclimateandtraffic"
-entity_id = "UnifiedWeatherAPIData"
-entity_type = "WeatherData"
+entity_id = "WeatherAPIDataPatras"
+entity_type = "omada08_WeatherData"
 
 def fetch_weather_data(city, api_key):
     """
@@ -94,7 +94,7 @@ def transform_weather_data(weather_data):
         "wind_speed": {"value": wind.get("speed", 0), "type": "Float"},
         "wind_deg": {"value": wind.get("deg", 0), "type": "Integer"},
         "rain_1h": {"value": rain, "type": "Float"},
-        "timestamp": {"value": datetime.now(tz=timezone.utc).isoformat(), "type": "Text"}
+        "timestamp": {"value": datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat(), "type": "DateTime"}
     }
     return attributes
 

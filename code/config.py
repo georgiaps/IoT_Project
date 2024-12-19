@@ -6,6 +6,9 @@ wind_sensor_topic = 'json/Environmental/barani-meteowind-iot-pro:1' #wind speed 
 noise_sensor_topic = 'json/Environmental/dutch-sensor-systems-ranos-db-2:1'
 co2_sensor_topic = 'json/Room monitoring/mclimate-co2-sensor:1'
 
+broker = '150.140.186.118'
+port = 1883
+
 fiware_host = "http://150.140.186.118:1026/v2/entities"
 fiware_service_path = "/microclimateandtraffic"
 fiware_weather_data = 'http://150.140.186.118:1026/v2/entities?type=WeatherData'
