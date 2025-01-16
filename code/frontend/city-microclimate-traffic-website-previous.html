@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Microclimate And Traffic Analysis</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c5282;
+            --secondary: #4299e1;
+            --accent: #2b6cb0;
+            --background: #f7fafc;
+            --card: #ffffff;
+            --text: #2d3748;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+        }
+
+        /*HEADER*/
+        .header {
+            background: var(--card);
+            padding: 1.8rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        /*LOGO*/
+        .logo {
+            position: absolute;
+            top: 15px;
+            left: 25px;
+            width: 150px;
+            height: 150px;
+            z-index: 2;
+        }
+
+
+        /*NAVIGATION*/
+        .nav {
+            background: var(--card);
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            z-index: 1;
+        }
+
+        .nav-button {
+            background: transparent;
+            color: var(--text);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 1.15em;
+        }
+
+        .nav-button:hover {
+            background: var(--background);
+            color: var(--primary);
+        }
+
+        .nav-button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav .search-container {
+            position: absolute;
+            right: 30px;
+        }
+
+        .nav input[type=text] {
+            padding: 6px;
+            margin-top: 8px;
+            font-size: 14px;
+            border-color: #ddd;
+            border-radius: 0.2rem;
+        }
+
+        /*NAVIGATION - SEARCH*/
+        .nav .search-container button {
+            float: right;
+            padding: 6px 10px;
+            margin-top: 7.5px;
+            margin-right: 4px;
+            border-radius: 0.2rem;
+            background: #ddd;
+            font-size: 17px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav .search-container button i {  /*magnifying glass icon*/
+            font-size: 14px;
+            color: var(--text); 
+        }
+
+        .nav .search-container button:hover {
+            background: #ccc;
+        }
+
+        @media screen and (max-width: 600px) {
+            .nav .search-container {
+                float: none;
+            }
+            .nav input[type=text], .nav .search-container button {
+                float: none;
+                display: block;
+                text-align: left;
+                width: 100%;
+                margin: 0;
+                padding: 14px;
+            }
+            .nav input[type=text] {
+                border: 1px solid #ccc;  
+            }
+        }
+
+        /*SECTION FOR ALL PAGES*/
+        .section {
+            display: none;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        /*INTRODUCTION*/
+        .intro {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #dde3f9;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .intro h2 {
+            text-align: left;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            color: #5986be;
+        }
+        .intro p {
+            text-align: justify;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        /*HOME PAGE - MAP*/
+        #map {
+            height: 600px;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        /*HOME PAGE - LOCATIONS LIST*/
+        .locations {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .location-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: var(--background);
+            border-radius: 0.75rem;
+            transition: transform 0.2s;
+        }
+
+        .location-item:hover {
+            transform: translateX(0.25rem);
+        }
+
+        .location-star {
+            font-size: 1.75rem;
+            margin-right: 1rem;
+        }
+
+        .location-info h3 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .location-info p {
+            color: #718096;
+            font-size: 0.875rem;
+        }
+
+        /*POINTS INFO PAGE - INFO*/
+        .weather-info {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .weather-info h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .weather-item {
+            padding: 1.25rem;
+            background: var(--background);
+            border-radius: 0.75rem;
+            text-align: center;
+        }
+
+        .weather-item h3 {
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-item p {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /*DIAGRAMS PAGE*/
+        .diagram-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .diagram {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .diagram h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .diagram img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .diagram-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                flex-wrap: wrap;
+            }
+            
+            .nav-button {
+                flex: 1 1 calc(50% - 1rem);
+            }
+        }
+
+        /*FOOTER*/
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            background-color: #dde3f9;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>City Microclimate And Traffic Analysis</h1>
+    </div>
+    <img src="logo.png" alt="Logo" class="logo">
+    <nav class="nav">
+        <button class="nav-button active" data-section="home">Home</button>
+        <button class="nav-button" data-section="city-points">City Points Info</button>
+        <button class="nav-button" data-section="diagrams">Diagrams</button>
+        <button class="nav-button" data-section="alerts">Alerts-Problems</button>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <div class="search-container">
+            <form action="/action_page.php">
+                <input type="text" placeholder="Search..." name="search">
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
+    </nav>
+ 
+    <section id="home" class="section active">
+        <section class="intro">
+            <h2>Welcome to City Microclimate and Traffic Analysis</h2>
+            <p>
+                Our platform provides a comprehensive overview of microclimate conditions and traffic patterns in key locations around the city. 
+                Use the interactive map to explore real-time data from advanced IoT sensors on temperature, air quality, humidity, and traffic 
+                congestion. With dynamic visualizations and timely alerts, we aim to enhance urban planning, improve traffic management, 
+                and contribute to a healthier, more sustainable city environment. Explore the data, monitor critical points, stay informed 
+                and make smarter decisions for your commute with our intuitive and innovative tools.
+            </p>
+        </section>
+        <div class="content">
+            <div id="map"></div>
+            <div class="locations">
+                <div class="location-item">
+                    <span class="location-star" style="color: #00cccc;">★</span>
+                    <div class="location-info">
+                        <h3>University Crossroad</h3>
+                        <p>38.290672° N, 21.780164° E</p>
+                    </div>
+                </div>
+                <div class="location-item">
+                    <span class="location-star" style="color: #0066ff;">★</span>
+                    <div class="location-info">
+                        <h3>Agyias Beach</h3>
+                        <p>38.277013° N, 21.745342° E</p>
+                    </div>
+                </div>
+                <div class="location-item">
+                    <span class="location-star" style="color: #800080;">★</span>
+                    <div class="location-info">
+                        <h3>National Road Interchange</h3>
+                        <p>38.262128° N, 21.750417° E</p>
+                    </div>
+                </div>
+                <div class="location-item">
+                    <span class="location-star" style="color: #ff6600;">★</span>
+                    <div class="location-info">
+                        <h3>Patras Centre</h3>
+                        <p>38.246877° N, 21.735854° E</p>
+                    </div>
+                </div>
+                <div class="location-item">
+                    <span class="location-star" style="color: #ff3366;">★</span>
+                    <div class="location-info">
+                        <h3>Gounarh Road</h3>
+                        <p>38.245566° N, 21.730981° E</p>
+                    </div>
+                </div>
+                <div class="location-item">
+                    <span class="location-star" style="color: #009900;">★</span>
+                    <div class="location-info">
+                        <h3>South Park</h3>
+                        <p>38.237902° N, 21.725841° E</p>
+                    </div>
+                </div>
+                <div class="location-item">
+                    <span class="location-star" style="color: #1a481a;">★</span>
+                    <div class="location-info">
+                        <h3>Dasyllio</h3>
+                        <p>38.248858° N, 21.745578° E</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="city-points" class="section">
+        <div class="weather-info">
+            <h2>Current Weather Conditions</h2>
+            <div class="weather-grid">
+                <div class="weather-item">
+                    <h3>Temperature</h3>
+                    <p>20°C</p>
+                </div>
+                <div class="weather-item">
+                    <h3>Humidity</h3>
+                    <p>68%</p>
+                </div>
+                <div class="weather-item">
+                    <h3>Wind Speed</h3>
+                    <p>14km/h</p>
+                </div>
+                <div class="weather-item">
+                    <h3>CO2 Levels</h3>
+                    <p>420ppm</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="diagrams" class="section">
+        <div class="diagram-container">
+            <div class="diagram">
+                <h3>Heat Map</h3>
+                <img src="/api/placeholder/500/300" alt="Heat map">
+            </div>
+            <div class="diagram">
+                <h3>Traffic Speed Analysis</h3>
+                <img src="/api/placeholder/500/300" alt="Traffic analysis">
+            </div>
+        </div>
+    </section>
+
+    <section id="alerts" class="section">
+        <div class="weather-info">
+            <h2>Current Alerts</h2>
+            <p>No active alerts at this time.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 City Microclimate and Traffic Analysis</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script>
+        const map = L.map('map').setView([38.2466, 21.7345], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        const locations = [
+            {name: 'University Crossroad', coords: [38.290672, 21.780164], color: '#00cccc'},
+            {name: 'Agyias Beach', coords: [38.277013, 21.745342], color: '#0066ff'},
+            {name: 'National Road Interchange', coords: [38.262128, 21.750417], color: '#800080'},
+            {name: 'Patras Centre', coords: [38.246877, 21.735854], color: '#ff6600'},
+            {name: 'Gounarh Road', coords: [38.245566, 21.730981], color: '#ff3366'},
+            {name: 'South Park', coords: [38.237902, 21.725841], color: '#009900'},
+            {name: 'Dasyllio', coords: [38.248858, 21.745578], color: '#1a481a'}
+        ];
+
+        locations.forEach(loc => {
+            L.marker(loc.coords, {
+                icon: L.divIcon({
+                    html: `<span style="color: ${loc.color}; font-size: 24px;">★</span>`,
+                    className: 'star-marker',
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                })
+            }).bindPopup(loc.name).addTo(map);
+        });
+
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                button.classList.add('active');
+                document.getElementById(button.dataset.section).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -3,8 +3,8 @@ import json
 from datetime import datetime, timezone
 
 # Configuration
-API_KEY = "R51mEIGhkA1ITAySjGZbD5OlRSaJjFHV"
-BASE_URL = "https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json"
+API_KEY = "9bb20a8d36e77bd9d405689a1c985d28"
+BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
 # Points Dictionary
 POINTS = {
@@ -12,48 +12,36 @@ POINTS = {
     "plaz": {"coordinates": "38.277013,21.745342", "name": "plaz"},
     "notio_parko": {"coordinates": "38.237902,21.725841", "name": "notio parko"},
     "diastaurwsh_panepisthmio": {"coordinates": "38.290672,21.780164", "name": "diastaurwsh panepisthmio"},
-    "university_patras": {"coordinates": "38.286860,21.787316", "name": "university of patras"},
     "gounarh": {"coordinates": "38.245566,21.730981", "name": "odos gounarh"},
     "ermou": {"coordinates": "38.246877,21.735854", "name": "odos ermou"},
     "dasyllio": {"coordinates": "38.248858,21.745578", "name": "dasyllio"},
-    "gefyra_rio_antirrio": {"coordinates": "38.320745,21.773224", "name": "gefyra rio_antirrio"},
-    "leuka": {"coordinates": "38.2066,21.7271", "name": "leuka"},
-    "paralia": {"coordinates": "38.1994,21.6992", "name": "paralia"},
-    "kato_sychaina": {"coordinates": "38.2652,21.757", "name": "kato sychaina"},
-    "demenika": {"coordinates": "38.2001,21.7438", "name": "demenika"},
-    "kastelokampos": {"coordinates": "38.2893,21.7739", "name": "kastelokampos"},
+    "gefyra_rio_antirrio": {"coordinates": "38.320745,21.773224", "name": "gefyra rio_antirrio"}
 }
 
 # FIWARE Context Broker
-fiware_host = "http://150.140.186.118:1026/v2/entities"
+fiware_host = "http://150.140.186.118:1026/v2/entities"  # Replace with your FIWARE context broker URL
 fiware_service_path = "/microclimateandtraffic"
-entity_type = "omada08_TrafficData"
+entity_type = "omada08_WeatherData"
 
-def fetch_traffic_flow(coordinates):
+def fetch_weather_data(lat, lon):
+    """
+    Fetch current weather data for specific coordinates from the OpenWeather API.
+    """
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "appid": API_KEY,
+        "units": "metric"  # Fetch data in Celsius
+    }
+
     try:
-        # Make the API call for Traffic Flow
-        response = requests.get(f"{BASE_URL}?point={coordinates}&key={API_KEY}")
+        response = requests.get(BASE_URL, params=params)
         response.raise_for_status()
-        print(f"Successful fetching of traffic data for {coordinates}")
-
-        # Parse the JSON data
-        traffic_flow_data = response.json()
-
-        # Calculate traffic percentage
-        flow_segment_data = traffic_flow_data.get("flowSegmentData", {})
-        if "currentSpeed" in flow_segment_data and "freeFlowSpeed" in flow_segment_data:
-            current_speed = flow_segment_data["currentSpeed"]
-            free_flow_speed = flow_segment_data["freeFlowSpeed"]
-            traffic_percentage = round(((free_flow_speed - current_speed) / free_flow_speed), 2)
-
-            # Add the calculated percentage to the data
-            flow_segment_data["trafficPercentage"] = traffic_percentage
-
-        return traffic_flow_data
-
+        print(f"Successful fetching of weather data for coordinates ({lat}, {lon})")
+        return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching Traffic Flow data: {e}")
-
+        print(f"Error fetching weather data: {e}")
+        return None
 
 def check_and_create_entity(entity_id, attributes):
     """
@@ -100,34 +88,41 @@ def send_to_fiware(entity_id, attributes):
     else:
         print(f"Entity {entity_id} updated successfully.")
 
-def transform_traffic_data(traffic_data, point):
+def transform_weather_data(weather_data, point):
     """
-    Transform raw traffic data into FIWARE-compatible attributes.
+    Transform raw weather data into FIWARE-compatible attributes.
     """
-    flow_data = traffic_data.get("flowSegmentData", {})
-    
+    main = weather_data.get("main", {})
+    wind = weather_data.get("wind", {})
+    rain = weather_data.get("rain", {}).get("1h", 0)  # Default to 0 if rain is missing
+
     attributes = {
-        "current_speed": {"value": flow_data.get("currentSpeed"), "type": "Integer"},
-        "free_flow_speed": {"value": flow_data.get("freeFlowSpeed"), "type": "Integer"},
-        "traffic_percentage": {"value": flow_data.get("trafficPercentage"), "type": "Float"},
+        "temperature": {"value": main.get("temp"), "type": "Float"},
+        "pressure": {"value": main.get("pressure"), "type": "Integer"},
+        "humidity": {"value": main.get("humidity"), "type": "Integer"},
+        "visibility": {"value": weather_data.get("visibility", 0), "type": "Integer"},
+        "wind_speed": {"value": wind.get("speed", 0), "type": "Float"},
+        "wind_deg": {"value": wind.get("deg", 0), "type": "Integer"},
+        "rain_1h": {"value": rain, "type": "Float"},
         "coordinates": {"value": point["coordinates"], "type": "Text"},
-        "traffic_point": {"value": point["name"], "type": "Text"},
+        "location_name": {"value": point["name"], "type": "Text"},
         "timestamp": {"value": datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat(), "type": "DateTime"}
     }
     return attributes
 
 def run():
     for key, point in POINTS.items():
-        entity_id = f"TrafficAPIData_{key}"
-        print(f"Fetching traffic data for {point['name']}...")
+        entity_id = f"WeatherAPIData_{key}"
+        lat, lon = point["coordinates"].split(",")
+        print(f"Fetching weather data for {point['name']}...")
 
-        # Fetch the traffic data
-        traffic_data = fetch_traffic_flow(point["coordinates"])
+        # Fetch the weather data
+        weather_data = fetch_weather_data(lat, lon)
 
-        if traffic_data:
-            # Transform the traffic data
-            attributes = transform_traffic_data(traffic_data, point)
-            print(f"Traffic Data to send for {point['name']}:", json.dumps(attributes, indent=2))
+        if weather_data:
+            # Transform the weather data
+            attributes = transform_weather_data(weather_data, point)
+            print(f"Weather Data to send for {point['name']}:", json.dumps(attributes, indent=2))
 
             # Check and create entity if necessary
             check_and_create_entity(entity_id, attributes)

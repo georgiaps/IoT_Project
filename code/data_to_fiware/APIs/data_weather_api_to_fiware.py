@@ -85,8 +85,10 @@ def transform_weather_data(weather_data):
     main = weather_data.get("main", {})
     wind = weather_data.get("wind", {})
     rain = weather_data.get("rain", {}).get("1h", 0)  # Default to 0 if rain is missing
+    weather = weather_data.get("weather", [])
 
     attributes = {
+        "description": {"value": weather[0].get("description", None), "type": "String"},
         "temperature": {"value": main.get("temp"), "type": "Float"},
         "pressure": {"value": main.get("pressure"), "type": "Integer"},
         "humidity": {"value": main.get("humidity"), "type": "Integer"},

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Microclimate And Traffic Analysis</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
+    <link rel = "stylesheet" href="styles.css">
+    
+</head>
+<body>
+    <div class="header">
+        <h1>City Microclimate And Traffic Analysis</h1>
+    </div>
+    <img src="logo.png" alt="Logo" class="logo">
+    <nav class="nav">
+        <button class="nav-button active" data-section="home">Home</button>
+        <button class="nav-button" data-section="city-points">City Points Info</button>
+        <button class="nav-button" data-section="diagrams">Diagrams</button>
+        <button class="nav-button" data-section="alerts">Alerts-Problems</button>
+        <button class="nav-button" data-section="contact-us">Contact Us</button> <!-- New Button -->
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <div class="search-container">
+            <form action="/action_page.php">
+                <input type="text" placeholder="Search..." name="search">
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
+    </nav>
+    
+    <section id="home" class="section active">
+        <section class="intro">
+            <h2>Welcome to City Microclimate and Traffic Analysis</h2>
+            <p>
+                Our platform provides a comprehensive overview of microclimate conditions and traffic patterns in key locations around the city of Patras. 
+                Use the interactive map to explore real-time data from advanced IoT sensors on temperature, percipitacion, humidity and traffic 
+                congestion. With dynamic visualizations and timely alerts, we aim to enhance urban planning, improve traffic management, 
+                and contribute to a healthier, more sustainable city environment. Explore the data, monitor critical points, stay informed 
+                and make smarter decisions for your commute with our intuitive and innovative tools.
+            </p>
+        </section>   
+
+        <div class="content">
+            <div id="map"></div>
+            <div class="locations">
+                <div class="location-item" onclick="goToLocation('University Crossroad')">
+                    <span class="location-star" style="color: #00cccc;">★</span>
+                    <div class="location-info">
+                        <h3>University Crossroad</h3>
+                        <p>38.290672° N, 21.780164° E</p>
+                    </div>
+                </div>
+                <div class="location-item" onclick="goToLocation('Agyias Beach')">
+                    <span class="location-star" style="color: #0066ff;">★</span>
+                    <div class="location-info">
+                        <h3>Agyias Beach</h3>
+                        <p>38.277013° N, 21.745342° E</p>
+                    </div>
+                </div>
+                <div class="location-item" onclick="goToLocation('National Road Interchange')">
+                    <span class="location-star" style="color: #800080;">★</span>
+                    <div class="location-info">
+                        <h3>National Road Interchange</h3>
+                        <p>38.262128° N, 21.750417° E</p>
+                    </div>
+                </div>
+                <div class="location-item" onclick="goToLocation('Patras Centre')">
+                    <span class="location-star" style="color: #ff6600;">★</span>
+                    <div class="location-info">
+                        <h3>Patras Centre</h3>
+                        <p>38.246877° N, 21.735854° E</p>
+                    </div>
+                </div>
+                <div class="location-item" onclick="goToLocation('Gounarh Road')">
+                    <span class="location-star" style="color: #ff3366;">★</span>
+                    <div class="location-info">
+                        <h3>Gounarh Road</h3>
+                        <p>38.245566° N, 21.730981° E</p>
+                    </div>
+                </div>
+                <div class="location-item" onclick="goToLocation('South Park')">
+                    <span class="location-star" style="color: #009900;">★</span>
+                    <div class="location-info">
+                        <h3>South Park</h3>
+                        <p>38.237902° N, 21.725841° E</p>
+                    </div>
+                </div>
+                <div class="location-item" onclick="goToLocation('Dasyllio')">
+                    <span class="location-star" style="color: #1a481a;">★</span>
+                    <div class="location-info">
+                        <h3>Dasyllio</h3>
+                        <p>38.248858° N, 21.745578° E</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="city-points" class="section">
+        <div class="weather-info">
+            <h2>Current Weather Conditions</h2>
+            <label for="location-select">Choose a location:</label>
+            <select id="location-select">
+                <option value="University Crossroad">University Crossroad</option>
+                <option value="Agyias Beach">Agyias Beach</option>
+                <option value="National Road Interchange">National Road Interchange</option>
+                <option value="Patras Centre">Patras Centre</option>
+                <option value="Gounarh Road">Gounarh Road</option>
+                <option value="South Park">South Park</option>
+                <option value="Dasyllio">Dasyllio</option>
+            </select>
+            <div id="location-info" class="weather-grid">
+                <!-- Information will be displayed dynamically here -->
+            </div>
+        </div>
+    </section>
+    <section id="diagrams" class="section">
+        <div class="diagram-container">
+            <div class="diagram">
+                <h3>Heat Map</h3>
+                <img src="/api/placeholder/500/300" alt="Heat map">
+            </div>
+            <div class="diagram">
+                <h3>Traffic Speed Analysis</h3>
+                <img src="/api/placeholder/500/300" alt="Traffic analysis">
+            </div>
+        </div>
+    </section>
+
+    <section id="alerts" class="section">
+        <div class="weather-info">
+            <h2>Current Alerts</h2>
+            <p>No active alerts at this time.</p>
+        </div>
+    </section>
+
+<!-- Contact Us Section -->
+<section id="contact-us" class="section">
+    <p>We'd love to hear from you! Reach out to any of our team members below:</p>
+    
+    <!-- Team Section -->
+    <div class="team-container">
+        <h3>Meet Our Team</h3>
+        <div class="team-members">
+            <div class="team-member">
+                <img src="team1.jpg" alt="Team Member 1">
+                <h4>Ariadne Fyrogeni</h4>
+                <p>Lead Developer</p>
+                <div class="contact-details">
+                    <p><strong>Email:</strong> up1083816@ac.upatras.gr</p>
+                    <p><strong>Phone:</strong> +306988096538</p>
+                </div>
+                <div class="social-links">
+                    <a href="mailto:up1083816@ac.upatras.gr">Email</a> | 
+                    <a href="https://www.linkedin.com/in/ariadne-fyrogeni-591853228/" target="_blank">LinkedIn</a>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="team2.jpg" alt="Team Member 2">
+                <h4>Georgia Psychogiou</h4>
+                <p>Data Analyst</p>
+                <div class="contact-details">
+                    <p><strong>Email:</strong> up1083979@ac.upatras.gr</p>
+                    <p><strong>Phone:</strong> +306998078521</p>
+                </div>
+                <div class="social-links">
+                    <a href="mailto:up1083979@ac.upatras.gr">Email</a> | 
+                    <a href="https://www.linkedin.com/in/%CE%B3%CE%B5%CF%89%CF%81%CE%B3%CE%AF%CE%B1-%CF%88%CF%85%CF%87%CE%BF%CE%B3%CE%B9%CE%BF%CF%8D-20a076331/" target="_blank">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    <footer>
+        <p>&copy; 2024 City Microclimate and Traffic Analysis</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

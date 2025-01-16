@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Microclimate and Traffic Analysis</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+    <style>
+        header h1 {
+            margin-top: 20px; /* Lower the title slightly */
+            text-align: center;
+            font-size: 2.5em;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            line-height: 45px;
+            padding: 0;
+            gap: 20px;
+            margin: 10px 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: green;
+            font-weight: bold;
+        }
+
+        .map-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 50px; /* Adjust spacing between map and points list */
+            margin: 30px;
+            padding: 30px; /* Add more padding inside the container */
+            max-width: 2000px;
+        }
+
+        .map-container #map {
+            width: 2000px;
+            height: 600px;
+            border: 2px solid #ccc; /* Optional: Add a border to the map */
+            border-radius: 10px;
+        }
+
+        .points-list {
+            list-style: none;
+            padding: 0;
+            font-size: 1.5em; /* Increase font size for readability */
+            margin-top: 20px;
+        }
+
+        .points-list li {
+            margin-bottom: 10px;
+            line-height: 45px;
+        }
+
+        .info-container {
+        display: flex; /* Arrange the image and details side by side */
+            align-items: flex-start; /* Align items at the top */
+            gap: 100px; /* Add spacing between the image and details */
+            margin-top: 20px;
+        }
+
+        .info-container img {
+            max-width: 40%; /* Adjust the size of the image */
+            height: auto;
+            margin-left: 30px;
+            border: 2px solid #ccc; /* Optional: Add a border to the image */
+            border-radius: 10px; /* Optional: Rounded corners */
+        }
+
+        .info-container div {
+            max-width: 60%; /* Ensure details don't take up too much space */
+        }
+
+        .diagram-container {
+            display: flex; /* Arrange diagrams side by side */
+            justify-content: center; /* Center diagrams horizontally */
+            gap: 20px; /* Add spacing between diagrams */
+            margin-top: 20px; /* Add some margin above the diagrams */
+        }
+
+        .diagram-container img {
+            max-width: 45%; /* Limit the size of each diagram */
+            height: auto;
+            border: 2px solid #ccc; /* Optional: Add a border for better visibility */
+            border-radius: 10px; /* Optional: Rounded corners */
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            background-color: #d4f5d4;
+            padding: 10px;
+        }
+        
+        .tab-content {
+            display: none; /* Hide all sections by default */
+        }
+
+        #home {
+            display: block; /* Show the Home section by default */
+        }
+
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRKU-OL54ZavlAUgYhxeDjdv9_rx4jLGM"></script>
+    <script src="interactivemap.js"></script>
+</head>
+<body>
+    <header>
+        <h1>City Microclimate And Traffic Analysis</h1>
+        <nav>
+            <ul>
+                <li><a href="#home" id="home-tab">Home</a></li>
+                <li><a href="#points-info" id="points-info-tab">City Points Info</a></li>
+                <li><a href="#diagrams" id="diagrams-tab">Diagrams</a></li>
+                <li><a href="#alerts-problems" id="alerts-problems-tab">Alerts-Problems</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="tab-content">
+            <div class="map-container">
+                <!-- <img src="C:\Users\ariad\OneDrive\Desktop\IoT_Project\code\frontend\images\map-placeholder.png" alt="City Map"> -->
+                <div id="map"></div>
+                <ul class="points-list">
+                    <li>University Crossroad</li>
+                    <li>Agyias Beach</li>
+                    <li>National Road Interchange</li>
+                    <li>Patras Centre</li>
+                    <li>Gounarh Road</li>
+                    <li>South Park</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- City Points Info Section -->
+        <section id="points-info" class="tab-content hidden">
+            <div class="info-container">
+                <img src="C:\Users\ariad\OneDrive\Desktop\IoT_Project\code\frontend\images\tofalos-interchange-placeholder.png" alt="Tofalos Interchange">
+                <div>
+                    <h2>Tofalos Interchange</h2>
+                    <p>Coordinates: 38.28292° N, 21.77103° E</p>
+                    <p>Temperature: 20°C</p>
+                    <p>Rain amount: 0mm</p>
+                    <p>Level of CO₂: 420ppm</p>
+                    <p>Wind: 14km/h</p>
+                    <p>Humidity: 68%</p>
+                    <p>Waiting Time: 2min</p>
+                    <p>Updated: Friday, 08/11/2024, 12:45:38</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Diagrams Section -->
+        <section id="diagrams" class="tab-content hidden">
+            <div class="diagram-container">
+                <img src="C:\Users\ariad\OneDrive\Desktop\IoT_Project\code\frontend\images\heatmap-placeholder.png" alt="Heat Map">
+                <img src="C:\Users\ariad\OneDrive\Desktop\IoT_Project\code\frontend\images\traffic-diagram-placeholder.png" alt="Traffic Speed Diagram">
+            </div>
+        </section>
+
+        <!-- Alerts-Problems Section -->
+        <section id="alerts-problems" class="tab-content hidden">
+            <h2>Alerts and Problems</h2>
+            <p>Details will be displayed here.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 City Microclimate and Traffic Analysis</p>
+    </footer>
+
+    <script src="scripts.js"></script> <!-- Link to external JavaScript -->
+</body>
+</html>

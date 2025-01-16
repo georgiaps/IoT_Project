@@ -1,6 +1,6 @@
 import requests
 
-url = "http://150.140.186.118:1026/v2/entities/TrafficAPIData_gounarh"
+url = "http://150.140.186.118:1026/v2/entities/WeatherAPIDataPatras"
 fiware_service_path = "/microclimateandtraffic"
 
 headers = {

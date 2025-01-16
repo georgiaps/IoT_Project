@@ -1,0 +1,455 @@
+:root {
+    --primary: #2c5282;
+    --secondary: #4299e1;
+    --accent: #2b6cb0;
+    --background: #f7fafc;
+    --card: #ffffff;
+    --text: #2d3748;
+    --border: #e2e8f0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background: var(--background);
+    color: var(--text);
+}
+
+/*HEADER*/
+.header {
+    background: var(--card);
+    padding: 1.8rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+    color: var(--primary);
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+}
+
+/*LOGO*/
+.logo {
+    position: absolute;
+    top: 15px;
+    left: 25px;
+    width: 150px;
+    height: 150px;
+    z-index: 2;
+}
+
+
+/*NAVIGATION*/
+.nav {
+    background: var(--card);
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 1;
+}
+
+.nav-button {
+    background: transparent;
+    color: var(--text);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 1.15em;
+}
+
+.nav-button:hover {
+    background: var(--background);
+    color: var(--primary);
+}
+
+.nav-button.active {
+    background: var(--primary);
+    color: white;
+}
+
+.nav .search-container {
+    position: absolute;
+    right: 30px;
+}
+
+.nav input[type=text] {
+    padding: 6px;
+    margin-top: 8px;
+    font-size: 14px;
+    border-color: #ddd;
+    border-radius: 0.2rem;
+}
+
+/*NAVIGATION - SEARCH*/
+.nav .search-container button {
+    float: right;
+    padding: 6px 10px;
+    margin-top: 7.5px;
+    margin-right: 4px;
+    border-radius: 0.2rem;
+    background: #ddd;
+    font-size: 17px;
+    border: none;
+    cursor: pointer;
+}
+
+.nav .search-container button i {  /*magnifying glass icon*/
+    font-size: 14px;
+    color: var(--text); 
+}
+
+.nav .search-container button:hover {
+    background: #ccc;
+}
+
+@media screen and (max-width: 600px) {
+    .nav .search-container {
+        float: none;
+    }
+    .nav input[type=text], .nav .search-container button {
+        float: none;
+        display: block;
+        text-align: left;
+        width: 100%;
+        margin: 0;
+        padding: 14px;
+    }
+    .nav input[type=text] {
+        border: 1px solid #ccc;  
+    }
+}
+
+/*SECTION FOR ALL PAGES*/
+.section {
+    display: none;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section.active {
+    display: block;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+/*INTRODUCTION*/
+.intro {
+    text-align: center;
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #dde3f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.intro h2 {
+    text-align: left;
+    margin-bottom: 10px;
+    font-size: 1.3em;
+    color: #5986be;
+}
+.intro p {
+    text-align: justify;
+    font-size: 1.1em;
+    color: #555;
+}
+
+/*HOME PAGE - MAP*/
+#map {
+    height: 600px;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    z-index: 0;
+}
+
+/*HOME PAGE - LOCATIONS LIST*/
+.locations {
+    background: var(--card);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.location-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    background: var(--background);
+    border-radius: 0.75rem;
+    transition: transform 0.2s;
+}
+
+.location-item:hover {
+    transform: translateX(0.25rem);
+}
+
+.location-star {
+    font-size: 1.75rem;
+    margin-right: 1rem;
+}
+
+.location-info h3 {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.location-info p {
+    color: #718096;
+    font-size: 0.875rem;
+}
+
+/*POINTS INFO PAGE - INFO*/
+.weather-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);  /* Three columns in the first row */
+    gap: 1.5rem;
+}
+
+.weather-item {
+    padding: 1.25rem;
+    background: var(--background);
+    border-radius: 0.75rem;
+    text-align: center;
+}
+
+.weather-item h3 {
+    color: var(--text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.weather-item p {
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* To ensure any additional elements below the first 3 frames are properly stacked */
+.weather-grid > .weather-item:nth-child(n+4) {
+    grid-column: span 1;  /* Rest of the items go into the next line */
+}
+
+
+/*DIAGRAMS PAGE*/
+.diagram-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.diagram {
+    background: var(--card);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.diagram h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.diagram img {
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+}
+
+@media (max-width: 1024px) {
+    .content {
+        grid-template-columns: 1fr;
+    }
+    
+    .diagram-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav {
+        flex-wrap: wrap;
+    }
+    
+    .nav-button {
+        flex: 1 1 calc(50% - 1rem);
+    }
+}
+
+.weather-item {
+    padding: 1.25rem;
+    background: var(--background);
+    border-radius: 0.75rem;
+    text-align: center;
+}
+
+.weather-item h3 {
+    color: var(--text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.weather-item p {
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.weather-info label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+#location-select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+#location-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.location-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    background: var(--background);
+    border-radius: 0.75rem;
+    transition: transform 0.2s;
+}
+
+.location-item:hover {
+    transform: translateX(0.25rem);
+}
+
+/* Contact Us Section */
+#contact-us {
+    background: #f9f9f9;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#contact-us h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+#contact-us p {
+    font-size: 1.1rem;
+    color: #34495e;
+    margin-bottom: 2rem;
+}
+
+/* Team Section */
+.team-container {
+    text-align: center;
+}
+
+.team-container h3 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.team-members {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.team-member {
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 250px;
+}
+
+.team-member img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
+.team-member h4 {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.team-member p {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin-bottom: 1rem;
+}
+
+.team-member .contact-details p {
+    font-size: 0.9rem;
+    color: #34495e;
+    margin-bottom: 0.5rem;
+}
+
+.team-member .contact-details p strong {
+    color: #2c3e50;
+}
+
+.team-member .social-links a {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin: 0 0.5rem;
+}
+
+.team-member .social-links a:hover {
+    text-decoration: underline;
+}
+
+
+/*FOOTER*/
+footer {
+    text-align: center;
+    margin-top: 30px;
+    background-color: #dde3f9;
+    padding: 10px;
+}

@@ -14,9 +14,9 @@ topic = 'omada08'
 
 # Define connection details for InfluxDB
 influxdb_url = "http://150.140.186.118:8086"
-bucket = "MicroclimateTraffic-team08"
+bucket = "MicroclimateTraffic-team08-Final"
 org = "students"
-token = "tV_gUZfCKmObZaYxUNYD6DxK3mCQ93REKC-84WaBlASk0-X43U4BST9FyeEzEN1VOnd9rIwQ2SyUeFS_1xhsUQ=="
+token = "sJcp3CYIFhde06U1V9LMu1Qcsl0KVo4die707OYtsM9XNzTg-w5-tUlbwtzQtm3rS30xIL5N9jT92h6K05cpiw=="
 
 # FIWARE Context Broker details
 fiware_url = "http://150.140.186.118:1026/v2/entities"
