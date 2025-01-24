@@ -2,6 +2,10 @@ openweather_API_key = "9bb20a8d36e77bd9d405689a1c985d28"
 tomtom_API_key = "R51mEIGhkA1ITAySjGZbD5OlRSaJjFHV"
 googlemaps_API_key = "AIzaSyCRKU-OL54ZavlAUgYhxeDjdv9_rx4jLGM"
 
+openweather_API_city_link = "https://api.openweathermap.org/data/2.5/weather?q={patras}&appid={9bb20a8d36e77bd9d405689a1c985d28}&units={metric}"
+openweather_API_points_link = "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={9bb20a8d36e77bd9d405689a1c985d28}&units={metric}"
+openweather_API_forecast_link = "https://api.openweathermap.org/data/2.5/forecast?q={patras}&appid={9bb20a8d36e77bd9d405689a1c985d28}&units={metric}"
+tomtom_API_link = "https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point={coordinates}&key={R51mEIGhkA1ITAySjGZbD5OlRSaJjFHV}"
 
 microclimate_sensor_topic = 'Environmental/barani-meteohelix-iot-pro:1' #air temperature, humidity, sun intensity
 wind_sensor_topic = 'json/Environmental/barani-meteowind-iot-pro:1' #wind speed and direction
