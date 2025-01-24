@@ -623,6 +623,15 @@
         font-weight: 600;
     }
 
+    .diagram img {
+        width: 300px;
+        height: auto;
+        margin: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
     .diagram iframe {
         width: 100%;
         height: 100%;
@@ -984,7 +993,7 @@
         <section id="diagrams" class="section">
 
             <h2>Traffic & Weather Correlation</h2>
-            <div class="diagram-container">
+            <div class="diagram-container" id="correlation-diagrams">
                 <div class="diagram">
                     <div class="diagramsdropdown">
                         <button>City Locations</button>
@@ -998,7 +1007,10 @@
                             <button data-location="South Park">South Park</button>
                         </div>
                     </div>
-                </div>
+                    <div class="diagram" id="diagram1"></div>
+                    <div class="diagram" id="diagram2"></div>
+                    <div class="diagram" id="diagram3"></div>
+                </div>  
             </div>
 
             <h2>Weather Conditions Comparison</h2>
@@ -1422,6 +1434,40 @@
                 if (button.dataset.location === location.name) {
                     button.classList.add('active');
                 }
+            });
+        });
+
+        document.querySelectorAll('.diagramsdropdown-content button').forEach(button => {
+            button.addEventListener('click', function () {
+                const location = this.getAttribute('data-location'); // Get the location
+                const diagramsContainer = document.getElementById('correlation-diagrams');
+
+                // Get the current date
+                const today = new Date();
+                
+                // Generate the last 3 dates (today, yesterday, two days ago)
+                const dates = [];
+                for (let i = 0; i < 3; i++) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() - i);
+                    const formattedDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+                    dates.push(formattedDate);
+                }
+
+                // Clear old diagrams
+                ['diagram1', 'diagram2', 'diagram3'].forEach((id, index) => {
+                    const diagramDiv = document.getElementById(id);
+                    diagramDiv.innerHTML = ''; // Clear previous content
+
+                    // Create and add new image
+                    const img = document.createElement('img');
+                    img.src = `/code/backend/correlation_diagrams/${location}/${dates[index]}.png`;
+                    img.alt = `${location} - ${dates[index]}`;
+                    img.onerror = () => {
+                        img.style.display = 'none'; // Hide if image doesn't exist
+                    };
+                    diagramDiv.appendChild(img);
+                });
             });
         });
 
