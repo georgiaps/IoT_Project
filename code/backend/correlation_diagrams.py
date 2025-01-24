@@ -1,6 +1,8 @@
 import os
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import numpy as np
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
@@ -8,112 +10,103 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 INFLUXDB_URL = "http://150.140.186.118:8086"  
 INFLUXDB_TOKEN = "sJcp3CYIFhde06U1V9LMu1Qcsl0KVo4die707OYtsM9XNzTg-w5-tUlbwtzQtm3rS30xIL5N9jT92h6K05cpiw=="  
 INFLUXDB_ORG = "students"  
-INFLUXDB_BUCKET = "MicroclimateTraffic-team08-Final"  
+INFLUXDB_BUCKET = "MicroclimateTraffic-team08-Final" 
 
-# Points configuration
+# Points configuration with units
 POINTS = {
-    "University Crossroad": ["diastaurwsh_panepisthmio", "rain_1h"],
-    "Agyias Beach": ["plaz", "temperature"],
-    "National Road Interchange": ["diastaurwsh_ethnikh", "rain_1h"],
-    "Patras Centre": ["ermou", "temperature"],
-    "South Park": ["notio_parko", "temperature"],
-    "Dasyllio": ["dasyllio", "humidity"],
-    "Rio-Antirrio Bridge": ["gefyra_rio_antirrio", "wind_speed"]
+    "University Crossroad": ["diastaurwsh_panepisthmio", "temperature", "°C"],
+    "Agyias Beach": ["plaz", "temperature", "°C"],
+    "National Road Interchange": ["diastaurwsh_ethnikh", "rain_1h", "mm"],
+    "Patras Centre": ["ermou", "temperature", "°C"],
+    "South Park": ["notio_parko", "wind_speed", "km/h"],
+    "Dasyllio": ["dasyllio", "humidity", "%"],
+    "Rio-Antirrio Bridge": ["gefyra_rio_antirrio", "temperature", "°C"]
 }
-# Folder to save diagrams
-OUTPUT_FOLDER = "correlation_diagrams"
-os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-# Query templates
-WEATHER_QUERY_TEMPLATE = (
-    "from(bucket: \"{bucket}\") "
-    "|> range(start: v.timeRangeStart, stop: v.timeRangeStop) "
-    "|> filter(fn: (r) => r[\"_measurement\"] == \"WeatherAPIData_{point}\") "
-    "|> filter(fn: (r) => r[\"_field\"] == \"{field}\") "
-    "|> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false) "
-    "|>  yield(name: \"mean\") "
-)
-
-TRAFFIC_QUERY_TEMPLATE = (
-    "from(bucket: \"{bucket}\") "
-    "|> range(start: v.timeRangeStart, stop: v.timeRangeStop) "
-    "|> filter(fn: (r) => r[\"_measurement\"] == \"WeatherAPIData_{point}\") "
-    "|> filter(fn: (r) => r[\"_field\"] == \"traffic_percentage\") "
-    "|> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false) "
-    "|>  yield(name: \"mean\") "
-)
-
-def query_influxdb(client, bucket, query_template, point, field, start, stop):
+def query_influxdb(client, bucket, point, measurement_type, field, start, stop):
     try:
-        query = query_template.format(
-            bucket=bucket,
-            start=start.isoformat() + "Z",  # Append 'Z' for UTC
-            stop=stop.isoformat() + "Z",  # Append 'Z' for UTC
-            field=field,
-            point=point
-        )
-        print(f"Running Query:\n{query}")  # Debugging: Log the query
+        query = f'''
+        from(bucket: "{bucket}")
+        |> range(start: {start.isoformat()}Z, stop: {stop.isoformat()}Z)
+        |> filter(fn: (r) => r["_measurement"] == "{measurement_type}_{point}")
+        |> filter(fn: (r) => r["_field"] == "{field}")
+        |> aggregateWindow(every: 15m, fn: mean, createEmpty: false)
+        |> yield(name: "mean")
+        '''
+        
         tables = client.query_api().query(query, org=INFLUXDB_ORG)
         data = [(record.get_time(), record.get_value()) for table in tables for record in table.records]
         return data
-    except Exception as e:
-        print(f"Error querying data for {point}: {e}")
+    except Exception as exc:
+        print(f"Error querying data for {point}: {exc}")
         return []
 
+def plot_daily_diagrams(client, bucket, point, point_code, weather_field, weather_unit, date):
+    point_folder = os.path.join("code/backend/correlation_diagrams", point)
+    os.makedirs(point_folder, exist_ok=True)
+    
+    for filename in os.listdir(point_folder):
+        if filename.endswith(".png"):
+            os.remove(os.path.join(point_folder, filename))
 
-def plot_diagrams_per_day(weather_series, traffic_series, point, date):
-    plt.figure(figsize=(10, 6))
-    for day, data in weather_series.items():
-        timestamps, values = zip(*data) if data else ([], [])
-        plt.plot(timestamps, values, label=f"Weather ({day})")
+    for day_offset in range(3):
+        current_date = (date - timedelta(days=day_offset)).date()
+        start = datetime.combine(current_date, datetime.min.time())
+        stop = datetime.combine(current_date, datetime.max.time())
 
-    for day, data in traffic_series.items():
-        timestamps, values = zip(*data) if data else ([], [])
-        plt.plot(timestamps, values, label=f"Traffic ({day})", linestyle='--')
+        traffic_data = query_influxdb(
+            client, bucket, point_code, "TrafficAPIData", "traffic_percentage", start, stop
+        )
 
-    plt.xlabel("Time")
-    plt.ylabel("Values")
-    plt.title(f"Weather and Traffic Correlation ({point}) - {date}")
-    plt.legend()
-    plt.grid()
-    filename = os.path.join(OUTPUT_FOLDER, f"{date}_{point}.png")
-    plt.savefig(filename)
-    plt.close()
-    print(f"Saved diagram: {filename}")
+        weather_data = query_influxdb(
+            client, bucket, point_code, "WeatherAPIData", weather_field, start, stop
+        )
 
+        if traffic_data or weather_data:
+            fig, ax1 = plt.subplots(figsize=(12, 7))
+            ax2 = ax1.twinx()
+
+            if traffic_data:
+                traffic_times, traffic_values = zip(*traffic_data)
+                traffic_values = [val * 100 for val in traffic_values]
+                ax1.plot(traffic_times, traffic_values, label='Traffic Percentage', color='#75283d', linestyle='-')
+                ax1.set_ylabel('Traffic Percentage (%)', color='#75283d')
+                ax1.tick_params(axis='y', labelcolor='#75283d')
+
+            if weather_data:
+                weather_times, weather_values = zip(*weather_data)
+                ax2.plot(weather_times, weather_values, label=f'{weather_field.capitalize()}', color='#2b6cb0', linestyle='--')
+                ax2.set_ylabel(f'{weather_field.capitalize()} ({weather_unit})', color='#2b6cb0')
+                ax2.tick_params(axis='y', labelcolor='#2b6cb0')
+
+            plt.title(f"{point} - {current_date}")
+            ax1.set_xlabel("Time")
+            ax1.grid(True)
+
+            # Format x-axis to show only time
+            ax1.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+            plt.setp(ax1.get_xticklabels(), rotation=45, ha='right')
+
+            lines1, labels1 = ax1.get_legend_handles_labels()
+            lines2, labels2 = ax2.get_legend_handles_labels()
+            ax1.legend(lines1 + lines2, labels1 + labels2, loc='best')
+
+            filename = os.path.join(point_folder, f"{current_date}.png")
+            plt.savefig(filename, bbox_inches='tight')
+            plt.close()
+            print(f"Saved diagram: {filename}")
+        else:
+            plt.close()
+            print(f"No data found for {point} on {current_date}")
 
 def main():
     client = InfluxDBClient(url=INFLUXDB_URL, token=INFLUXDB_TOKEN, org=INFLUXDB_ORG)
     today = datetime.now()
 
-    for location, values in POINTS.items():
-        # Ensure point and field are present
-        if len(values) < 2:
-            print(f"Skipping {location} due to missing field configuration.")
-            continue
-
-        point, field = values[0], values[1]
-        weather_series, traffic_series = {}, {}
-
-        for day_offset in range(3):
-            date = (today - timedelta(days=day_offset)).date()
-            start = datetime.combine(date, datetime.min.time())
-            stop = datetime.combine(date, datetime.max.time())
-
-            # Query data
-            weather_series[date] = query_influxdb(
-                client, INFLUXDB_BUCKET, WEATHER_QUERY_TEMPLATE, point, field, start, stop
-            )
-            traffic_series[date] = query_influxdb(
-                client, INFLUXDB_BUCKET, TRAFFIC_QUERY_TEMPLATE, point, "traffic_percentage", start, stop
-            )
-
-        # Plot for all days
-        plot_diagrams_per_day(weather_series, traffic_series, location, today.date())
+    for location, (point_code, weather_field, weather_unit) in POINTS.items():
+        plot_daily_diagrams(client, INFLUXDB_BUCKET, location, point_code, weather_field, weather_unit, today)
 
     client.close()
-
-
 
 if __name__ == "__main__":
     main()
