@@ -16,6 +16,7 @@
         --card: #ffffff;
         --text: #2d3748;
         --border: #e2e8f0;
+        /*--contrast: #75283d;*/
     }
 
     * {
@@ -541,6 +542,19 @@
         font-size: 1rem;
     }
 
+    .diagramsdropdown button::after {
+        content: '';
+        border-bottom: 2px solid #ffffff;
+        border-right: 2px solid #ffffff;
+        position: absolute;
+        top: 50%;
+        right: 30px;
+        width: 8px;
+        height: 8px;
+        transform: rotate(45deg) translateY(-50%);
+        transform-origin: right;
+    }
+
     .diagramsdropdown-content {
         display: none;
         position: absolute;
@@ -564,6 +578,12 @@
         cursor: pointer;
     }
 
+    .diagramsdropdown-content button::after {
+        content: '';
+        font-size: 0.8rem;
+        margin-left: 1rem;
+    }
+
     .diagramsdropdown-content button:hover {
         background: var(--background);
         color: var(--primary);
@@ -577,6 +597,15 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
+        height: 400px;
+        margin-bottom: 30px;
+    }
+
+    .diagram-container h2{
+        text-align: left;
+        margin-bottom: 15px;
+        font-size: 1.3em;
+        color: var(--primary);
     }
 
     .diagram {
@@ -584,6 +613,9 @@
         padding: 1.5rem;
         border-radius: 1rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        height: 400px;
+        margin-top: 10px;
     }
 
     .diagram h3 {
@@ -592,10 +624,9 @@
         font-weight: 600;
     }
 
-    .diagram img {
+    .diagram iframe {
         width: 100%;
-        height: auto;
-        border-radius: 0.5rem;
+        height: 100%;
     }
 
     @media (max-width: 1024px) {
@@ -952,21 +983,37 @@
 
         <!-- Diagrams Section -->
         <section id="diagrams" class="section">
-            <div class="diagramsdropdown">
-                <button>City Locations</button>
-                <div class="diagramsdropdown-content"> 
-                    <button data-location="Rio-Antirrio Bridge">Rio-Antirrio Bridge</button>
-                    <button data-location="University Crossroad">University Crossroad</button>
-                    <button data-location="Agyias Beach">Agyias Beach</button>
-                    <button data-location="National Road Interchange">National Road Interchange</button>
-                    <button data-location="Dasyllio">Dasyllio</button>
-                    <button data-location="Patras Centre">Patras Centre</button>
-                    <button data-location="South Park">South Park</button>
-                </div>
-            </div>
+
+            <h2>Traffic & Weather Correlation</h2>
             <div class="diagram-container">
                 <div class="diagram">
+                    <div class="diagramsdropdown">
+                        <button>City Locations</button>
+                        <div class="diagramsdropdown-content">
+                            <button data-location="Rio-Antirrio Bridge">Rio-Antirrio Bridge</button>
+                            <button data-location="University Crossroad">University Crossroad</button>
+                            <button data-location="Agyias Beach">Agyias Beach</button>
+                            <button data-location="National Road Interchange">National Road Interchange</button>
+                            <button data-location="Dasyllio">Dasyllio</button>
+                            <button data-location="Patras Centre">Patras Centre</button>
+                            <button data-location="South Park">South Park</button>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <h2>Weather Conditions Comparison</h2>
+            <div class="diagram-container">
+                <div class="diagram">
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/ae86wq8xjs8aoe/weather-conditions-comparison?timezone=browser&orgId=2&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                </div>
+                <div class="diagram">
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/ae86wq8xjs8aoe/weather-conditions-comparison?timezone=browser&orgId=2&theme=light&panelId=2&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <h2>Historical Insights</h2>
+            <div class="diagram-container">
                 <div class="diagram">
                 </div>
             </div>
@@ -1094,7 +1141,7 @@
         }
 
         function fetchGeneralCityWeather() {
-            fetch('http://172.20.10.6:8080/api/city-data')
+            fetch('http://192.168.1.6:8080/api/city-data')
                 .then(response => response.json())
                 .then(data => {
                     updateCityWeather(data);
@@ -1294,7 +1341,7 @@
             /*fetch('http://192.168.1.6:8080/api/city-data') georgia*/
             /*fetch('http://192.168.1.144:8080/api/city-data') giorgos*/
             /*fetch('http://192.168.1.6:8080/api/city-data')*/
-            fetch('http://172.20.10.6:8080/api/city-data') /*atout*/
+            fetch('http://192.168.1.6:8080/api/city-data') /*atout*/
                 .then(response => response.json())
                 .then(data => {
                     if (currentSelectedLocation) {
