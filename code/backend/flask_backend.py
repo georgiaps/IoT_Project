@@ -17,6 +17,11 @@ location_mapping = {
     "South Park": "WeatherAPIData_notio_parko",
     "Dasyllio": "WeatherAPIData_dasyllio",
     "Rio-Antirrio Bridge": "WeatherAPIData_gefyra_rio_antirrio",
+    "Leuka": "WeatherAPIData_leuka",
+    "Paralia": "WeatherAPIData_paralia",
+    "Kato Sychaina": "WeatherAPIData_kato_sychaina",
+    "Demenika": "WeatherAPIData_demenika",
+    "Kastelokampos": "WeatherAPIData_kastelokampos",
 
     "Patras": "WeatherAPIDataPatras"
 }
@@ -31,12 +36,17 @@ city_data = {
     "South Park": {},
     "Dasyllio": {},
     "Rio-Antirrio Bridge": {},
-    "Patras": {}
+    "Leuka": {},
+    "Paralia": {},
+    "Kato Sychaina": {},
+    "Demenika": {},
+    "Kastelokampos": {},
+    "Patras": {},
+    "University of Patras": {}
 }
 
 # FIWARE API endpoint
 FIWARE_BASE_URL = "http://150.140.186.118:1026/v2/entities"
-
 
 def fetch_fiware_data():
     """Fetch updated data from FIWARE and update city_data."""
@@ -93,11 +103,46 @@ def fetch_fiware_data():
             except Exception as e:
                 print(f"Error processing traffic data for {traffic_entity}: {e}")
     print("Completed fetching traffic data for all the locations")
+
+def fetch_fiware_uni_data():
+    """Fetch updated data from FIWARE and update city_data."""
+
+    # Fetch weather data
+    weather_response = requests.get(f"{FIWARE_BASE_URL}/UnifiedWeatherSensorDataUni")
+
+    if (weather_response.status_code == 200):
+        try:
+            weather_data = weather_response.json()
+            city_data["University of Patras"]["weather"] = {
+                "Temperature": weather_data.get("temperature", {}).get("value", "N/A"),
+                "Humidity": weather_data.get("humidity", {}).get("value", "N/A"),
+                "Wind Speed": weather_data.get("wind_speed", {}).get("value", "N/A"),
+                "Wind Direction": weather_data.get("wind_direction", {}).get("value", "N/A"),
+                "Rain": weather_data.get("rain", {}).get("value", "N/A"),
+                "Pressure": weather_data.get("pressure", {}).get("value", "N/A")
+            }
+        except Exception as e:
+            print(f"Error processing weather data for university of patras: {e}")
+
+    # Fetch traffic data
+    traffic_response = requests.get(f"{FIWARE_BASE_URL}/TrafficAPIData_university_patras")
+
+    if (traffic_response.status_code == 200):
+        try:
+            traffic_data = traffic_response.json()
+            city_data["University of Patras"]["traffic"] = {
+                "Current Speed": traffic_data.get("current_speed", {}).get("value", "N/A"),
+                "Free Flow Speed": traffic_data.get("free_flow_speed", {}).get("value", "N/A"),
+                "Traffic Percentage": traffic_data.get("traffic_percentage", {}).get("value", "N/A")
+            }
+        except Exception as e:
+            print(f"Error processing traffic data for university of patras: {e}")
     
 
 # Schedule FIWARE data updates every 10 minutes
 scheduler = BackgroundScheduler()
 scheduler.add_job(fetch_fiware_data, 'interval', minutes=10)
+scheduler.add_job(fetch_fiware_uni_data, 'interval', minutes=10)
 scheduler.start()
 
 @app.route('/api/city-data', methods=['GET'])
@@ -105,8 +150,17 @@ def get_city_data():
     """Endpoint to retrieve updated city data."""
     return jsonify(city_data)
 
+'''
+def get_city_data():
+    """Endpoint to retrieve updated city and university data."""
+    return jsonify({
+        "city_data": city_data,
+        "uni_data": uni_data
+    })'''
+
 # Run Flask app
 if __name__ == '__main__':
     # Fetch initial data on startup
     fetch_fiware_data()
+    fetch_fiware_uni_data()
     app.run(host='0.0.0.0', port=8080, debug=True)

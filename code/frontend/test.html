@@ -178,74 +178,102 @@
     /*HOME PAGE - INTRODUCTION*/
     .intro-container {
         display: grid;
-        grid-template-columns: 2fr 1fr;
+        grid-template-columns: 2fr 1fr; /* Adjust ratio as needed */
         gap: 20px;
-        margin: 20px 0;
+        align-items: stretch;
     }
-    
+
     /*HOME PAGE - INTRODUCTION - TEXT*/
     .intro {
         text-align: center;
-        margin: 20px 0;
-        padding: 20px;
+        margin: 0;
+        padding: 15px;  /* Reduced padding */
         background-color: #dde3f9;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
     }
     .intro h2 {
         text-align: left;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         font-size: 1.3em;
         color: #5986be;
     }
+
     .intro p {
         text-align: justify;
         font-size: 1.1em;
         color: #555;
-        line-height: 1.6;
+        line-height: 1.3;  /* Further reduced */
+        margin: 0;
     }
 
     /*HOME PAGE - INTRODUCTION - PATRAS WEATHER OVERVIEW*/
     .weather-overview {
         background-color: #dde3f9;
-        padding: 10px;
+        padding: 15px;  /* Reduced padding */
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 0;
+        margin: 0;
     }
 
     .weather-overview h2 {
-        text-align: center;
-        margin-bottom: 0px;
-        margin-top: 10px;
-        font-size: 1em;
-        color: var(--primary);
-        line-height: 1;
+        margin-bottom: 10px;  /* Reduced margin */
+        font-size: 1.2em;
+    }
+
+    .weather-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;  /* Further reduced */
+        margin-bottom: 8px;  /* Further reduced */
     }
 
     .weather-overview img {
         width: 80px;
         height: 80px;
-        margin-top: 0;
-        display: block;
+        object-fit: contain;
     }
 
     .weather-overview-data {
-        width: 100%;
-        margin-top: 5px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px; /* Reduced from 10px */
     }
 
     .weather-overview-item {
         display: flex;
         justify-content: space-between;
-        padding: 5px 0;
+        padding: 2px 0;  /* Minimal padding */
         border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .weather-overview-item:last-child {
         border-bottom: none;
+    }
+
+    .weather-overview-item span:first-child {
+        color: #555;
+        font-weight: 500;
+    }
+
+    .weather-overview-item span:last-child {
+        color: #2c5282;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .intro-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .intro, .weather-overview {
+            height: auto;
+        }
     }
 
     /*HOME PAGE - MAP*/
@@ -356,13 +384,13 @@
     }
 
     /*POINTS INFO PAGE - LOCATION SELECT*/
-    .dropdown {
+    .infodropdown {
         position: relative;
         display: inline-block;
         line-height: 50px;
     }
 
-    .dropdown button {
+    .infodropdown button {
         background: #5986be;
         color: white;
         border: none;
@@ -372,22 +400,40 @@
         width: 100%;
         min-width: 260px;
         font-size: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
-    .dropdown-content {
+    .infodropdown button::after {
+        content: '';
+        border-bottom: 2px solid #ffffff;
+        border-right: 2px solid #ffffff;
+        position: absolute;
+        top: 50%;
+        right: 30px;
+        width: 8px;
+        height: 8px;
+        transform: rotate(45deg) translateY(-50%);
+        transform-origin: right;
+    }
+
+    .infodropdown-content {
         display: none;
         position: absolute;
         background-color: var(--card);
-        min-width: 260px;
+        min-width: 520px;
         box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
         z-index: 1;
         border-radius: 2px;
         font-size: 1rem;
         line-height: 40px;
         font-size: 1rem;
+        column-count: 2;
+        column-rule: 1px solid var(--primary);
     }
 
-    .dropdown-content button {
+    .infodropdown-content button {
         background: transparent;
         border: none;
         color: var(--text);
@@ -395,14 +441,21 @@
         text-align: left;
         width: 100%;
         cursor: pointer;
+        display: block;
     }
 
-    .dropdown-content button:hover {
+    .infodropdown-content button::after {
+        content: '';
+        font-size: 0.8rem;
+        margin-left: 1rem;
+    }
+
+    .infodropdown-content button:hover {
         background: var(--background);
         color: var(--primary);
     }
 
-    .dropdown:hover .dropdown-content {
+    .infodropdown:hover .infodropdown-content {
         display: block;
     }
 
@@ -470,10 +523,88 @@
     }
 
     /*DIAGRAMS PAGE*/
+    .diagramsdropdown {
+        position: relative;
+        display: inline-block;
+        line-height: 50px;
+    }
+
+    .diagramsdropdown button {
+        background: #5986be;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 2px;
+        cursor: pointer;
+        width: 100%;
+        min-width: 260px;
+        font-size: 1rem;
+    }
+
+    .diagramsdropdown button::after {
+        content: '';
+        border-bottom: 2px solid #ffffff;
+        border-right: 2px solid #ffffff;
+        position: absolute;
+        top: 50%;
+        right: 30px;
+        width: 8px;
+        height: 8px;
+        transform: rotate(45deg) translateY(-50%);
+        transform-origin: right;
+    }
+
+    .diagramsdropdown-content {
+        display: none;
+        position: absolute;
+        background-color: var(--card);
+        min-width: 260px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        border-radius: 2px;
+        font-size: 1rem;
+        line-height: 40px;
+        font-size: 1rem;
+    }
+
+    .diagramsdropdown-content button {
+        background: transparent;
+        border: none;
+        color: var(--text);
+        padding: 10px;
+        text-align: left;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .diagramsdropdown-content button::after {
+        content: '';
+        font-size: 0.8rem;
+        margin-left: 1rem;
+    }
+
+    .diagramsdropdown-content button:hover {
+        background: var(--background);
+        color: var(--primary);
+    }
+
+    .diagramsdropdown:hover .diagramsdropdown-content {
+        display: block;
+    }
+
     .diagram-container {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
+        height: 400px;
+        margin-bottom: 30px;
+    }
+
+    .diagram-container h2{
+        text-align: left;
+        margin-bottom: 15px;
+        font-size: 1.3em;
+        color: var(--primary);
     }
 
     .diagram {
@@ -481,6 +612,9 @@
         padding: 1.5rem;
         border-radius: 1rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        height: 400px;
+        margin-top: 10px;
     }
 
     .diagram h3 {
@@ -489,10 +623,9 @@
         font-weight: 600;
     }
 
-    .diagram img {
+    .diagram iframe {
         width: 100%;
-        height: auto;
-        border-radius: 0.5rem;
+        height: 100%;
     }
 
     @media (max-width: 1024px) {
@@ -603,7 +736,7 @@
         text-decoration: underline;
     }
 
-    .dropdown-content button.active {
+    .infodropdown-content button.active {
         /*background: var(--secondary);
         color: white;*/
         font-weight: bold;
@@ -644,8 +777,8 @@
     <main>
         <!-- Home Section -->
         <section id="home" class="section active">
-            <section class="intro-container">
-                <section class="intro">
+            <div class="intro-container">
+                <div class="intro">
                     <h2>Welcome to City Microclimate and Traffic Analysis</h2>
                     <p>
                         Our platform provides a comprehensive overview of microclimate conditions and traffic patterns in key locations around the city of Patras. 
@@ -654,34 +787,36 @@
                         and contribute to a healthier, more sustainable city environment. Explore the data, monitor critical points, stay informed 
                         and make smarter decisions for your commute with our intuitive and innovative tools.
                     </p>
-                </section>
-                <section class="weather-overview">
+                </div>
+                <div class="weather-overview">
                     <h2>Patras Weather Info</h2>
-                    <img id="weather-icon" src="weather icons/default weather.png" alt="Weather Icon">
-                    <div class="weather-overview-data">
-                        <div class="weather-overview-item">
-                            <span>Description:</span>
-                            <span id="city-description">--</span>
-                        </div>
-                        <div class="weather-overview-item">
-                            <span>Temperature:</span>
-                            <span id="city-temperature">--</span>
-                        </div>
-                        <div class="weather-overview-item">
-                            <span>Humidity:</span>
-                            <span id="city-humidity">--</span>
-                        </div>
-                        <div class="weather-overview-item">
-                            <span>Wind Speed:</span>
-                            <span id="city-wind-speed">--</span>
-                        </div>
-                        <div class="weather-overview-item">
-                            <span>Rain:</span>
-                            <span id="city-rain">--</span>
+                    <div class="weather-content">
+                        <img id="weather-icon" src="weather icons/default weather.png" alt="Weather Icon">
+                        <div class="weather-overview-data">
+                            <div class="weather-overview-item">
+                                <span>Description:</span>
+                                <span id="city-description">--</span>
+                            </div>
+                            <div class="weather-overview-item">
+                                <span>Temperature:</span>
+                                <span id="city-temperature">--</span>
+                            </div>
+                            <div class="weather-overview-item">
+                                <span>Humidity:</span>
+                                <span id="city-humidity">--</span>
+                            </div>
+                            <div class="weather-overview-item">
+                                <span>Wind Speed:</span>
+                                <span id="city-wind-speed">--</span>
+                            </div>
+                            <div class="weather-overview-item">
+                                <span>Rain:</span>
+                                <span id="city-rain">--</span>
+                            </div>
                         </div>
                     </div>
-                </section>
-            </section>   
+                </div>
+            </div>   
 
             <div class="content">
                 <div id="map"></div>
@@ -698,10 +833,28 @@
                             <p>38.290672° N, 21.780164° E</p>
                         </div>
                     </div>
+                    <div class="location-item" data-location="University of Patras" style="color: #27489c;">
+                        <div class="location-info">
+                            <h3>University of Patras</h3>
+                            <p>38.286860° N, 21.787316° E</p>
+                        </div>
+                    </div>
+                    <div class="location-item" data-location="Kastelokampos" style="color: #566487;">
+                        <div class="location-info">
+                            <h3>Kastelokampos</h3>
+                            <p>38.289309° N, 21.773976° E</p>
+                        </div>
+                    </div>
                     <div class="location-item" data-location="Agyias Beach" style="color: #3d52a0;">
                         <div class="location-info">
                             <h3>Agyias Beach</h3>
                             <p>38.277013° N, 21.745342° E</p>
+                        </div>
+                    </div>
+                    <div class="location-item" data-location="Kato Sychaina" style="color: #303a5c;">
+                        <div class="location-info">
+                            <h3>Kato Sychaina</h3>
+                            <p>38.265289° N, 21.75704° E</p>
                         </div>
                     </div>
                     <div class="location-item" data-location="National Road Interchange" style="color: #47a3c2;">
@@ -728,10 +881,28 @@
                             <p>38.245566° N, 21.730981° E</p>
                         </div>
                     </div>
-                    <div class="location-item" data-location="South Park" style="color: #2c5282;">
+                    <div class="location-item" data-location="South Park" style="color: #5a87a0;">
                         <div class="location-info">
                             <h3>South Park</h3>
                             <p>38.237902° N, 21.725841° E</p>
+                        </div>
+                    </div>
+                    <div class="location-item" data-location="Leuka" style="color: #805fa5;">
+                        <div class="location-info">
+                            <h3>Leuka</h3>
+                            <p>38.206621° N, 21.727154° E</p>
+                        </div>
+                    </div>
+                    <div class="location-item" data-location="Demenika" style="color: #566ba4;">
+                        <div class="location-info">
+                            <h3>Demenika</h3>
+                            <p>38.200158° N, 21.743877° E</p>
+                        </div>
+                    </div>
+                    <div class="location-item" data-location="Paralia" style="color: #2c6182;">
+                        <div class="location-info">
+                            <h3>Paralia</h3>
+                            <p>38.199456° N, 21.699234° E</p>
                         </div>
                     </div>
                 </div>
@@ -742,19 +913,25 @@
         <section id="city-points" class="section">
             <div class="loc-info">
                 <p>Select a location to view the weather and traffic information:</p>
-                <div class="dropdown">
+                <div class="infodropdown">
                     <button>City Locations</button>
-                <div class="dropdown-content"> 
-                    <button data-location="Rio-Antirrio Bridge">Rio-Antirrio Bridge</button>
-                    <button data-location="University Crossroad">University Crossroad</button>
-                    <button data-location="Agyias Beach">Agyias Beach</button>
-                    <button data-location="National Road Interchange">National Road Interchange</button>
-                    <button data-location="Dasyllio">Dasyllio</button>
-                    <button data-location="Patras Centre">Patras Centre</button>
-                    <button data-location="Gounarh Road">Gounarh Road</button>
-                    <button data-location="South Park">South Park</button>
+                    <div class="infodropdown-content"> 
+                        <button data-location="Rio-Antirrio Bridge">Rio-Antirrio Bridge</button>
+                        <button data-location="University Crossroad">University Crossroad</button>
+                        <button data-location="University of Patras">University of Patras</button>
+                        <button data-location="Kastelokampos">Kastelokampos</button>
+                        <button data-location="Agyias Beach">Agyias Beach</button>
+                        <button data-location="Kato Sychaina">Kato Sychaina</button>
+                        <button data-location="National Road Interchange">National Road Interchange</button>
+                        <button data-location="Dasyllio">Dasyllio</button>
+                        <button data-location="Patras Centre">Patras Centre</button>
+                        <button data-location="Gounarh Road">Gounarh Road</button>
+                        <button data-location="South Park">South Park</button>
+                        <button data-location="Leuka">Leuka</button>
+                        <button data-location="Demenika">Demenika</button>
+                        <button data-location="Paralia">Paralia</button>
+                    </div>
                 </div>
-            </div>
                 <button class="refresh-button" >Refresh Data</button>
             </div>
 
@@ -801,19 +978,42 @@
                     <p id="traffic-percentage">--</p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
         <!-- Diagrams Section -->
         <section id="diagrams" class="section">
+
+            <h2>Traffic & Weather Correlation</h2>
             <div class="diagram-container">
                 <div class="diagram">
-                    <h3>Heat Map</h3>
-                    <img src="/api/placeholder/500/300" alt="Heat map">
+                    <div class="diagramsdropdown">
+                        <button>City Locations</button>
+                        <div class="diagramsdropdown-content">
+                            <button data-location="Rio-Antirrio Bridge">Rio-Antirrio Bridge</button>
+                            <button data-location="University Crossroad">University Crossroad</button>
+                            <button data-location="Agyias Beach">Agyias Beach</button>
+                            <button data-location="National Road Interchange">National Road Interchange</button>
+                            <button data-location="Dasyllio">Dasyllio</button>
+                            <button data-location="Patras Centre">Patras Centre</button>
+                            <button data-location="South Park">South Park</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Weather Conditions Comparison</h2>
+            <div class="diagram-container">
+                <div class="diagram">
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/ae86wq8xjs8aoe/weather-conditions-comparison?timezone=browser&orgId=2&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
                 </div>
                 <div class="diagram">
-                    <h3>Traffic Speed Analysis</h3>
-                    <img src="/api/placeholder/500/300" alt="Traffic analysis">
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/ae86wq8xjs8aoe/weather-conditions-comparison?timezone=browser&orgId=2&theme=light&panelId=2&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <h2>Historical Insights</h2>
+            <div class="diagram-container">
+                <div class="diagram">
                 </div>
             </div>
         </section>
@@ -885,15 +1085,30 @@
             'few clouds': 'weather icons/few clouds.png',
             'scattered clouds': 'weather icons/scattered clouds.png',
             'broken clouds': 'weather icons/broken clouds.png',
+            'overcast clouds': 'weather icons/broken clouds.png',
             'shower rain': 'weather icons/shower rain.png',
-            'rain': 'weather icons/rain.png',
-            'thunderstorm': 'weather icons/thunderstorm.png',
-            'snow': 'weather icons/snow.png',
-            'mist': 'weather icons/mist.png', 
             'light rain': 'weather icons/shower rain.png',
             'moderate rain': 'weather icons/shower rain.png',
-            'overcast clouds': 'weather icons/broken clouds.png'
-            
+            'heavy intensity rain': 'weather icons/shower rain.png',
+            'very heavy rain': 'weather icons/shower rain.png',
+            'extreme rain': 'weather icons/shower rain.png',
+            'rain': 'weather icons/rain.png',
+            'drizzle': 'weather icons/rain.png',
+            'drizzle rain': 'weather icons/rain.png',
+            'thunderstorm': 'weather icons/thunderstorm.png',
+            'thunderstorm with light rain': 'weather icons/thunderstorm.png',
+            'thunderstorm with rain': 'weather icons/thunderstorm.png',
+            'thunderstorm with heavy rain': 'weather icons/thunderstorm.png',
+            'thunderstorm with drizzle': 'weather icons/thunderstorm.png',
+            'light thunderstorm': 'weather icons/thunderstorm.png',
+            'heavy thunderstorm': 'weather icons/thunderstorm.png',
+            'snow': 'weather icons/snow.png',
+            'light snow': 'weather icons/snow.png',
+            'light rain and snow': 'weather icons/snow.png',
+            'mist': 'weather icons/mist.png', 
+            'haze': 'weather icons/mist.png', 
+            'fog': 'weather icons/mist.png', 
+            'dust': 'weather icons/mist.png',            
         };
 
         // Function to update city weather overview
@@ -946,14 +1161,20 @@
         const locations = [
             { name: 'Rio-Antirrio Bridge', coords: [38.320745, 21.773224], color: '#6d6a82' },
             { name: 'University Crossroad', coords: [38.290672, 21.780164], color: '#7091e6' },
+            { name: 'University of Patras', coords: [38.286860,21.787316], color: '#27489c' },
+            { name: 'Kastelokampos', coords: [38.2893, 21.7739], color: '#566487' },
             { name: 'Agyias Beach', coords: [38.277013, 21.745342], color: '#3d52a0' },
+            { name: 'Kato Sychaina', coords: [38.2652,21.757], color: '#303a5c' },
             { name: 'National Road Interchange', coords: [38.262128, 21.750417], color: '#47a3c2' },
             { name: 'Dasyllio', coords: [38.248858, 21.745578], color: '#515660' },
             { name: 'Patras Centre', coords: [38.246877, 21.735854], color: '#5c52a0' },
             { name: 'Gounarh Road', coords: [38.245566, 21.730981], color: '#7687b7' },
-            { name: 'South Park', coords: [38.237902, 21.725841], color: '#2c5282' }
+            { name: 'South Park', coords: [38.237902, 21.725841], color: '#5a87a0' },
+            { name: 'Leuka', coords: [38.2066,21.7271], color: '#805fa5' },
+            { name: 'Demenika', coords: [38.2001,21.7438], color: '#566ba4' },
+            { name: 'Paralia', coords: [38.1994,21.6992], color: '#2c6182' }
         ];
-        
+
         const locationWeatherInfo = document.getElementById('loc-info');
         const locationTrafficInfo = document.getElementById('loc-info');
 
@@ -1083,25 +1304,26 @@
             });
         });
 
-        // Update weather and traffic location info when dropdown selection changes
-        document.querySelectorAll('.dropdown-content button').forEach(button => {
+        // Update weather and traffic location info when infodropdown selection changes
+        document.querySelectorAll('.infodropdown-content button').forEach(button => {
             button.addEventListener('click', () => {
                 const locationName = button.dataset.location;
                 if (locationName) {
                     updateWeatherLocationInfo(locationName);
                     updateTrafficLocationInfo(locationName);
+                    updateinfodropdownButton(locationName);
                 }
             });
         });
 
-        const dropdownButton = document.querySelector('.dropdown button');
+        const infodropdownButton = document.querySelector('.infodropdown button');
 
-        // Function to update the dropdown button text
-        function updateDropdownButton(locationName) {
-            if (dropdownButton) {
-                dropdownButton.textContent = locationName;
+        // Function to update the infodropdown button text
+        function updateinfodropdownButton(locationName) {
+            if (infodropdownButton) {
+                infodropdownButton.textContent = locationName;
             }
-            document.querySelectorAll('.dropdown-content button').forEach(button => {
+            document.querySelectorAll('.infodropdown-content button').forEach(button => {
                 button.classList.remove('active');
                 if (button.dataset.location === locationName) {
                     button.classList.add('active');
@@ -1117,8 +1339,8 @@
         function fetchCityData() {
             /*fetch('http://192.168.1.6:8080/api/city-data') georgia*/
             /*fetch('http://192.168.1.144:8080/api/city-data') giorgos*/
-            /*fetch('http://172.20.10.6:8080/api/city-data') atout*/
-            fetch('http://192.168.1.6:8080/api/city-data')
+            /*fetch('http://192.168.1.6:8080/api/city-data')*/
+            fetch('http://192.168.1.6:8080/api/city-data') /*atout*/
                 .then(response => response.json())
                 .then(data => {
                     if (currentSelectedLocation) {
@@ -1161,7 +1383,7 @@
         // Update weather info when location changes
         function updateWeatherLocationInfo(location) {
             currentSelectedLocation = location;
-            updateDropdownButton(location);
+            updateinfodropdownButton(location);
             fetchCityData(); // Fetch fresh data when location changes
         }
 
@@ -1194,8 +1416,8 @@
             updateWeatherLocationInfo(location.name);
             updateTrafficLocationInfo(location.name);
 
-            // Highlight the matching location in the dropdown (optional)
-            document.querySelectorAll('.dropdown-content button').forEach(button => {
+            // Highlight the matching location in the infodropdown (optional)
+            document.querySelectorAll('.infodropdown-content button').forEach(button => {
                 button.classList.remove('active');
                 if (button.dataset.location === location.name) {
                     button.classList.add('active');
