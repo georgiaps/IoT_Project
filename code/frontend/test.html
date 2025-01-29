@@ -5,762 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Microclimate And Traffic Analysis</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<style>
-    /*GENERAL*/
-    :root {
-        --primary: #2c5282;
-        --secondary: #4299e1;
-        --accent: #2b6cb0;
-        --background: #f7fafc;
-        --card: #ffffff;
-        --text: #2d3748;
-        --border: #e2e8f0;
-    }
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: system-ui, -apple-system, sans-serif;
-    }
-
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
-
-    body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh; /* viewport height */
-        background: var(--background);
-        color: var(--text);
-    }
-
-    main {
-        flex: 1 0 auto; /* This makes the main content area expand */
-    }
-
-    /*HEADER*/
-    .header {
-        background: var(--card);
-        padding: 1.8rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-
-    .header h1 {
-        color: var(--primary);
-        font-size: 2rem;
-        text-align: center;
-        font-weight: 800;
-        letter-spacing: -0.025em;
-    }
-
-    /*LOGO*/
-    .logo {
-        position: absolute;
-        top: 15px;
-        left: 25px;
-        width: 150px;
-        height: 150px;
-        z-index: 2;
-    }
-
-    /*NAVIGATION*/
-    .nav {
-        background: var(--card);
-        padding: 1rem;
-        display: flex;
-        justify-content: center;
-        gap: 2.5rem;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        z-index: 1;
-    }
-
-    /*NAVIGATION - BUTTONS*/
-    .nav-button {
-        background: transparent;
-        color: var(--text);
-        border: none;
-        padding: 0.5rem 1.5rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s;
-        font-size: 1.15em;
-    }
-
-    .nav-button:hover {
-        background: var(--background);
-        color: var(--primary);
-    }
-
-    .nav-button.active {
-        background: var(--primary);
-        color: white;
-    }
-
-    /*NAVIGATION - SEARCH*/
-    .nav .search-container {
-        position: absolute;
-        right: 30px;
-    }
-
-    .nav input[type=text] {
-        padding: 6px;
-        margin-top: 8px;
-        font-size: 14px;
-        border-color: #ddd;
-        border-radius: 0.2rem;
-    }
-
-    .nav .search-container button {
-        float: right;
-        padding: 6px 10px;
-        margin-top: 7.5px;
-        margin-right: 4px;
-        border-radius: 0.2rem;
-        background: #ddd;
-        font-size: 17px;
-        border: none;
-        cursor: pointer;
-    }
-
-    .nav .search-container button i {  /*magnifying glass icon*/
-        font-size: 14px;
-        color: var(--text); 
-    }
-
-    .nav .search-container button:hover {
-        background: #ccc;
-    }
-
-    @media screen and (max-width: 600px) {
-        .nav .search-container {
-            float: none;
-        }
-        .nav input[type=text], .nav .search-container button {
-            float: none;
-            display: block;
-            text-align: left;
-            width: 100%;
-            margin: 0;
-            padding: 14px;
-        }
-        .nav input[type=text] {
-            border: 1px solid #ccc;  
-        }
-    }
-
-    /*SECTION FOR ALL PAGES*/
-    .section {
-        display: none;
-        padding: 2rem;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .section.active {
-        display: block;
-    }
-
-    .content {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr;
-        gap: 2rem;
-        margin-top: 1rem;
-    }
-
-    /*HOME PAGE - INTRODUCTION*/
-    .intro-container {
-        display: grid;
-        grid-template-columns: 2fr 1fr; /* Adjust ratio as needed */
-        gap: 20px;
-        align-items: stretch;
-    }
-
-    /*HOME PAGE - INTRODUCTION - TEXT*/
-    .intro {
-        text-align: center;
-        margin: 0;
-        padding: 15px;  /* Reduced padding */
-        background-color: #dde3f9;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-    }
-    .intro h2 {
-        text-align: left;
-        margin-bottom: 15px;
-        font-size: 1.3em;
-        color: #5986be;
-    }
-
-    .intro p {
-        text-align: justify;
-        font-size: 1.1em;
-        color: #555;
-        line-height: 1.3;  /* Further reduced */
-        margin: 0;
-    }
-
-    /*HOME PAGE - INTRODUCTION - PATRAS WEATHER OVERVIEW*/
-    .weather-overview {
-        background-color: #dde3f9;
-        padding: 15px;  /* Reduced padding */
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        margin: 0;
-    }
-
-    .weather-overview h2 {
-        margin-bottom: 10px;  /* Reduced margin */
-        font-size: 1.2em;
-    }
-
-    .weather-content {
-        display: flex;
-        align-items: center;
-        gap: 10px;  /* Further reduced */
-        margin-bottom: 8px;  /* Further reduced */
-    }
-
-    .weather-overview img {
-        width: 80px;
-        height: 80px;
-        object-fit: contain;
-    }
-
-    .weather-overview-data {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 2px; /* Reduced from 10px */
-    }
-
-    .weather-overview-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 2px 0;  /* Minimal padding */
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    .weather-overview-item:last-child {
-        border-bottom: none;
-    }
-
-    .weather-overview-item span:first-child {
-        color: #555;
-        font-weight: 500;
-    }
-
-    .weather-overview-item span:last-child {
-        color: #2c5282;
-        font-weight: 600;
-    }
-
-    @media (max-width: 768px) {
-        .intro-container {
-            grid-template-columns: 1fr;
-        }
-        
-        .intro, .weather-overview {
-            height: auto;
-        }
-    }
-
-    /*HOME PAGE - MAP*/
-    #map {
-        height: 600px;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        z-index: 0;
-    }
-
-    /*HOME PAGE - LOCATIONS LIST*/
-    .locations {
-        background: var(--card);
-        padding: 1.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        max-height: 600px;
-        overflow-y: auto;
-
-        scrollbar-width: thin;
-        scrollbar-color: #A9A9A9;
-    }
-
-    /*HOME PAGE - SCROLLBAR*/
-    .locations::-webkit-scrollbar {
-        width: 10px;
-    }
-
-    .locations::-webkit-scrollbar-thumb {
-        background-color: var(--secondary);
-        border-radius: 10px;
-        border: 2px solid var(--background);
-    }
-
-    .locations::-webkit-scrollbar-track {
-        background: var(--background);
-        border-radius: 10px;
-    }
-
-    /*HOME PAGE - MAP LOCATIONS*/
-    .location-item {
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        background: var(--background);
-        border-radius: 0.75rem;
-        transition: transform 0.2s, background-color 0.2s;
-    }
-
-    .location-item:hover {
-        transform: translateX(0.25rem);
-    }
-
-    .marker-popup {
-        padding: 0.1rem;
-    }
-
-    .marker-popup h3 {
-        color:  var(--text);
-        margin-bottom: 0.1rem;
-        font-size: 0.7rem;
-        font-weight: 400;
-    }
-
-    /*HOME PAGE - LOCATION INFO*/
-    .location-info h3 {
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-
-    .location-info p {
-        color: #718096;
-        font-size: 0.875rem;
-    }
-
-    #location-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-    }
-
-    /*POINTS INFO PAGE*/
-    .loc-info label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    /*POINTS INFO PAGE - REFRESH DATA BUTTON*/
-    .refresh-button {
-        background:#2c5282;
-        color: white; 
-        float: right;    
-        margin-right: 150px;                       
-        padding: 0.5rem 1rem; 
-        border: none; 
-        border-radius: 8px; 
-        cursor: pointer; 
-        font-size: 1rem;
-    }
-
-    .refresh-button:hover {
-        background: #5986be;
-        color: var(--border);
-    }
-
-    /*POINTS INFO PAGE - LOCATION SELECT*/
-    .infodropdown {
-        position: relative;
-        display: inline-block;
-        line-height: 50px;
-    }
-
-    .infodropdown button {
-        background: #5986be;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 2px;
-        cursor: pointer;
-        width: 100%;
-        min-width: 260px;
-        font-size: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .infodropdown button::after {
-        content: '';
-        border-bottom: 2px solid #ffffff;
-        border-right: 2px solid #ffffff;
-        position: absolute;
-        top: 50%;
-        right: 30px;
-        width: 8px;
-        height: 8px;
-        transform: rotate(45deg) translateY(-50%);
-        transform-origin: right;
-    }
-
-    .infodropdown-content {
-        display: none;
-        position: absolute;
-        background-color: var(--card);
-        min-width: 520px;
-        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-        border-radius: 2px;
-        font-size: 1rem;
-        line-height: 40px;
-        font-size: 1rem;
-        column-count: 2;
-        column-rule: 1px solid var(--primary);
-    }
-
-    .infodropdown-content button {
-        background: transparent;
-        border: none;
-        color: var(--text);
-        padding: 10px;
-        text-align: left;
-        width: 100%;
-        cursor: pointer;
-        display: block;
-    }
-
-    .infodropdown-content button::after {
-        content: '';
-        font-size: 0.8rem;
-        margin-left: 1rem;
-    }
-
-    .infodropdown-content button:hover {
-        background: var(--background);
-        color: var(--primary);
-    }
-
-    .infodropdown:hover .infodropdown-content {
-        display: block;
-    }
-
-    /*POINTS INFO PAGE - WEATHER INFO*/
-    .weather-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);  /* Three columns in the first row */
-        gap: 1.5rem;
-    }
-
-    .weather-item {
-        padding: 1.25rem;
-        background: var(--background);
-        border-radius: 0.75rem;
-        text-align: center;
-    }
-
-    .weather-item h3 {
-        color: var(--text);
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .weather-item p {
-        color: var(--primary);
-        font-size: 1.5rem;
-        font-weight: 700;
-    }
-
-    /* To ensure any additional elements below the first 3 frames are properly stacked */
-    .weather-grid > .weather-item:nth-child(n+4) {
-        grid-column: span 1;  /* Rest of the items go into the next line */
-    }
-
-    /*POINTS INFO PAGE - TRAFFIC INFO*/
-    .traffic-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
-    }
-
-    .traffic-item {
-        padding: 1.25rem;
-        background: var(--background);
-        border-radius: 0.75rem;
-        text-align: center;
-    }
-
-    .traffic-item h3 {
-        color: var(--text);
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .traffic-item p {
-        color: var(--primary);
-        font-size: 1.5rem;
-        font-weight: 700;
-    }
-
-    .traffic-grid > .traffic-item:nth-child(n+4) {
-        grid-column: span 1;  
-    }
-
-    /*DIAGRAMS PAGE*/
-    .diagramsdropdown {
-        position: relative;
-        display: inline-block;
-        line-height: 50px;
-    }
-
-    .diagramsdropdown button {
-        background: #5986be;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 2px;
-        cursor: pointer;
-        width: 100%;
-        min-width: 260px;
-        font-size: 1rem;
-    }
-
-    .diagramsdropdown button::after {
-        content: '';
-        border-bottom: 2px solid #ffffff;
-        border-right: 2px solid #ffffff;
-        position: absolute;
-        top: 50%;
-        right: 30px;
-        width: 8px;
-        height: 8px;
-        transform: rotate(45deg) translateY(-50%);
-        transform-origin: right;
-    }
-
-    .diagramsdropdown-content {
-        display: none;
-        position: absolute;
-        background-color: var(--card);
-        min-width: 260px;
-        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-        border-radius: 2px;
-        font-size: 1rem;
-        line-height: 40px;
-        font-size: 1rem;
-    }
-
-    .diagramsdropdown-content button {
-        background: transparent;
-        border: none;
-        color: var(--text);
-        padding: 10px;
-        text-align: left;
-        width: 100%;
-        cursor: pointer;
-    }
-
-    .diagramsdropdown-content button::after {
-        content: '';
-        font-size: 0.8rem;
-        margin-left: 1rem;
-    }
-
-    .diagramsdropdown-content button:hover {
-        background: var(--background);
-        color: var(--primary);
-    }
-
-    .diagramsdropdown:hover .diagramsdropdown-content {
-        display: block;
-    }
-
-    .diagram-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        height: 400px;
-        margin-bottom: 30px;
-    }
-
-    .diagram-container h2{
-        text-align: left;
-        margin-bottom: 15px;
-        font-size: 1.3em;
-        color: var(--primary);
-    }
-
-    .diagram {
-        background: var(--card);
-        padding: 1.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        height: 400px;
-        margin-top: 10px;
-    }
-
-    .diagram h3 {
-        color: var(--primary);
-        margin-bottom: 1rem;
-        font-weight: 600;
-    }
-
-    .diagram img {
-        width: 300px;
-        height: auto;
-        margin: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 5px;
-    }
-
-    .diagram iframe {
-        width: 100%;
-        height: 100%;
-    }
-
-    @media (max-width: 1024px) {
-        .content {
-            grid-template-columns: 1fr;
-        }
-        
-        .diagram-container {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .nav {
-            flex-wrap: wrap;
-        }
-        
-        .nav-button {
-            flex: 1 1 calc(50% - 1rem);
-        }
-    }
-
-    /*CONTACT US PAGE*/
-    #contact-us {
-        background: #f9f9f9;
-        padding: 2rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-
-    #contact-us h2 {
-        font-size: 2rem;
-        color: #2c3e50;
-        margin-bottom: 1rem;
-    }
-
-    #contact-us p {
-        font-size: 1.1rem;
-        color: #34495e;
-        margin-bottom: 2rem;
-    }
-
-    /*CONTACT US PAGE - TEAM SECTION*/
-    .team-container {
-        text-align: center;
-    }
-
-    .team-container h3 {
-        font-size: 1.8rem;
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-    }
-
-    .team-members {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        flex-wrap: wrap;
-    }
-
-    .team-member {
-        background: #ffffff;
-        padding: 1.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        width: 250px;
-    }
-
-    .team-member img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        margin-bottom: 1rem;
-    }
-
-    .team-member h4 {
-        font-size: 1.2rem;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-    }
-
-    .team-member p {
-        font-size: 1rem;
-        color: #7f8c8d;
-        margin-bottom: 1rem;
-    }
-
-    .team-member .contact-details p {
-        font-size: 0.9rem;
-        color: #34495e;
-        margin-bottom: 0.5rem;
-    }
-
-    .team-member .contact-details p strong {
-        color: #2c3e50;
-    }
-
-    .team-member .social-links a {
-        color: #3498db;
-        text-decoration: none;
-        font-size: 0.9rem;
-        margin: 0 0.5rem;
-    }
-
-    .team-member .social-links a:hover {
-        text-decoration: underline;
-    }
-
-    .infodropdown-content button.active {
-        /*background: var(--secondary);
-        color: white;*/
-        font-weight: bold;
-    }
-
-    /*FOOTER*/
-    footer {
-        flex-shrink: 0;
-        text-align: center;
-        margin-top: auto;
-        background-color: #dde3f9;
-        padding: 10px;
-        width: 100%;
-    }
-</style>
 <body>
     <div class="header">
         <h1>City Microclimate And Traffic Analysis</h1>
@@ -921,7 +168,7 @@
         <!-- City Points Info Section -->
         <section id="city-points" class="section">
             <div class="loc-info">
-                <p>Select a location to view the weather and traffic information:</p>
+                <!--<p>Select a location to view the weather and traffic information:</p>-->
                 <div class="infodropdown">
                     <button>City Locations</button>
                     <div class="infodropdown-content"> 
@@ -942,75 +189,112 @@
                     </div>
                 </div>
                 <button class="refresh-button" >Refresh Data</button>
+
+                <h2>Current Weather Conditions</h2>
+                <div class="weather-grid">
+                    <div class="weather-item">
+                        <h3>Temperature</h3>
+                        <p id="temperature">--</p>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Humidity</h3>
+                        <p id="humidity">--</p>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Wind Speed</h3>
+                        <p id="wind-speed">--</p>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Wind Direction</h3>
+                        <p id="wind-direction">--</p>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Rain</h3>
+                        <p id="rain">--</p>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Pressure</h3>
+                        <p id="pressure">--</p>
+                    </div>
+                </div>
+        
+                <h2>Current Traffic Conditions</h2>
+                <div class="traffic-grid">
+                    <div class="traffic-item">
+                        <h3>Current Speed</h3>
+                        <p id="current-speed">--</p>
+                    </div>
+                    <div class="traffic-item">
+                        <h3>Free Flow Speed</h3>
+                        <p id="free-flow-speed">--</p>
+                    </div>
+                    <div class="traffic-item">
+                        <h3>Traffic Percentage</h3>
+                        <p id="traffic-percentage">--</p>
+                    </div>
+                </div>
+
+                <h2>Microclimate Localized Forecast</h2>
+                <div class="forecast-weather-grid">
+                    <div class="forecast-weather-item">
+                        <h3>Temperature</h3>
+                        <p id="forecast-temperature">--</p>
+                    </div>
+                    <div class="forecast-weather-item">
+                        <h3>Humidity</h3>
+                        <p id="forecast-humidity">--</p>
+                    </div>
+                    <div class="forecast-weather-item">
+                        <h3>Wind Speed</h3>
+                        <p id="forecast-wind-speed">--</p>
+                    </div>
+                    <div class="forecast-weather-item">
+                        <h3>Wind Direction</h3>
+                        <p id="forecast-wind-direction">--</p>
+                    </div>
+                    <div class="forecast-weather-item">
+                        <h3>Rain</h3>
+                        <p id="forecast-rain">--</p>
+                    </div>
+                    <div class="forecast-weather-item">
+                        <h3>Pressure</h3>
+                        <p id="forecast-pressure">--</p>
+                    </div>
+                </div>
             </div>
 
-            <h2>Current Weather Conditions</h2>
-            <div class="weather-grid">
-                <div class="weather-item">
-                    <h3>Temperature</h3>
-                    <p id="temperature">--</p>
-                </div>
-                <div class="weather-item">
-                    <h3>Humidity</h3>
-                    <p id="humidity">--</p>
-                </div>
-                <div class="weather-item">
-                    <h3>Wind Speed</h3>
-                    <p id="wind-speed">--</p>
-                </div>
-                <div class="weather-item">
-                    <h3>Wind Direction</h3>
-                    <p id="wind-direction">--</p>
-                </div>
-                <div class="weather-item">
-                    <h3>Rain</h3>
-                    <p id="rain">--</p>
-                </div>
-                <div class="weather-item">
-                    <h3>Pressure</h3>
-                    <p id="pressure">--</p>
-                </div>
-            </div>
-    
-            <h2>Current Traffic Conditions</h2>
-            <div class="traffic-grid">
-                <div class="traffic-item">
-                    <h3>Current Speed</h3>
-                    <p id="current-speed">--</p>
-                </div>
-                <div class="traffic-item">
-                    <h3>Free Flow Speed</h3>
-                    <p id="free-flow-speed">--</p>
-                </div>
-                <div class="traffic-item">
-                    <h3>Traffic Percentage</h3>
-                    <p id="traffic-percentage">--</p>
-                </div>
-            </div>
         </section>
 
         <!-- Diagrams Section -->
         <section id="diagrams" class="section">
 
             <h2>Traffic & Weather Correlation</h2>
-            <div class="diagram-container" id="correlation-diagrams">
-                <div class="diagram">
-                    <div class="diagramsdropdown">
-                        <button>City Locations</button>
-                        <div class="diagramsdropdown-content">
-                            <button data-location="Rio-Antirrio Bridge">Rio-Antirrio Bridge</button>
-                            <button data-location="University Crossroad">University Crossroad</button>
-                            <button data-location="Agyias Beach">Agyias Beach</button>
-                            <button data-location="National Road Interchange">National Road Interchange</button>
-                            <button data-location="Dasyllio">Dasyllio</button>
-                            <button data-location="Patras Centre">Patras Centre</button>
-                            <button data-location="South Park">South Park</button>
-                        </div>
+            <div class="diagram">
+                <div class="diagramsdropdown">
+                    <button>City Locations</button>
+                    <div class="diagramsdropdown-content">
+                        <button data-location="Rio-Antirrio Bridge">Rio-Antirrio Bridge</button>
+                        <button data-location="University Crossroad">University Crossroad</button>
+                        <button data-location="Agyias Beach">Agyias Beach</button>
+                        <button data-location="National Road Interchange">National Road Interchange</button>
+                        <button data-location="Dasyllio">Dasyllio</button>
+                        <button data-location="Patras Centre">Patras Centre</button>
+                        <button data-location="South Park">South Park</button>
                     </div>
-                    <div class="diagram" id="diagram1"></div>
-                    <div class="diagram" id="diagram2"></div>
-                    <div class="diagram" id="diagram3"></div>
-                </div>  
+                </div>
+                <div id="diagram-container-correlation">
+                    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                        <img src="correlation_diagrams/Default/diagram_today.png" 
+                             alt="Default Today Correlation Diagram" 
+                             style="width: 30%; border: 2px solid #ccc; border-radius: 5px;">
+                        <img src="correlation_diagrams/Default/diagram_yesterday.png" 
+                             alt="Default Yesterday Correlation Diagram" 
+                             style="width: 30%; border: 2px solid #ccc; border-radius: 5px;">
+                        <img src="correlation_diagrams/Default/diagram_two_days_ago.png" 
+                             alt="Default Two Days Ago Correlation Diagram" 
+                             style="width: 30%; border: 2px solid #ccc; border-radius: 5px;">
+                    </div>
+                </div>
             </div>
 
             <h2>Weather Conditions Comparison</h2>
@@ -1032,10 +316,8 @@
 
         <!-- Alerts-Problems Section -->
         <section id="alerts" class="section">
-            <div class="loc-info">
-                <h2>Current Alerts</h2>
-                <p>No active alerts at this time.</p>
-            </div>
+            <h2>Current Alerts</h2>
+            <p>No active alerts at this time.</p>
         </section>
 
         <!-- Contact Us Section -->
@@ -1049,7 +331,7 @@
                     <div class="team-member">
                         <img src="team_member_1.jpg" alt="Team Member 1">
                         <h4>Ariadne Fyrogeni</h4>
-                        <p>Lead Developer</p>
+                        <p>ECE Student</p>
                         <div class="contact-details">
                             <p><strong>Email:</strong> up1083816@ac.upatras.gr</p>
                             <p><strong>Phone:</strong> +306940505767</p>
@@ -1062,7 +344,7 @@
                     <div class="team-member">
                         <img src="team_member_2.jpg" alt="Team Member 2">
                         <h4>Georgia Psychogiou</h4>
-                        <p>Data Analyst</p>
+                        <p>ECE Student</p>
                         <div class="contact-details">
                             <p><strong>Email:</strong> up1083979@ac.upatras.gr</p>
                             <p><strong>Phone:</strong> +306988097895</p>
@@ -1152,7 +434,7 @@
         }
 
         function fetchGeneralCityWeather() {
-            fetch('http://192.168.1.6:8080/api/city-data')
+            fetch('http://172.20.10.6:8080/api/city-data')
                 .then(response => response.json())
                 .then(data => {
                     updateCityWeather(data);
@@ -1352,7 +634,7 @@
             /*fetch('http://192.168.1.6:8080/api/city-data') georgia*/
             /*fetch('http://192.168.1.144:8080/api/city-data') giorgos*/
             /*fetch('http://192.168.1.6:8080/api/city-data')*/
-            fetch('http://192.168.1.6:8080/api/city-data') /*atout*/
+            fetch('http://172.20.10.6:8080/api/city-data') /*atout*/
                 .then(response => response.json())
                 .then(data => {
                     if (currentSelectedLocation) {
@@ -1437,39 +719,88 @@
             });
         });
 
-        document.querySelectorAll('.diagramsdropdown-content button').forEach(button => {
-            button.addEventListener('click', function () {
-                const location = this.getAttribute('data-location'); // Get the location
-                const diagramsContainer = document.getElementById('correlation-diagrams');
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.diagramsdropdown-content button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const location = this.getAttribute('data-location');
+                    const diagramContainer = document.getElementById('diagram-container-correlation');
 
-                // Get the current date
-                const today = new Date();
-                
-                // Generate the last 3 dates (today, yesterday, two days ago)
-                const dates = [];
-                for (let i = 0; i < 3; i++) {
-                    const date = new Date(today);
-                    date.setDate(today.getDate() - i);
-                    const formattedDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-                    dates.push(formattedDate);
-                }
+                    // Check if the container exists
+                    if (!diagramContainer) {
+                        console.error('Error: diagram-container-correlation not found in the DOM.');
+                        return;
+                    }
 
-                // Clear old diagrams
-                ['diagram1', 'diagram2', 'diagram3'].forEach((id, index) => {
-                    const diagramDiv = document.getElementById(id);
-                    diagramDiv.innerHTML = ''; // Clear previous content
+                    // Update dropdown button text
+                    const diagramsdropdownButton = document.querySelector('.diagramsdropdown button');
+                    if (diagramsdropdownButton) {
+                        diagramsdropdownButton.textContent = location;
+                    }
 
-                    // Create and add new image
-                    const img = document.createElement('img');
-                    img.src = `/code/backend/correlation_diagrams/${location}/${dates[index]}.png`;
-                    img.alt = `${location} - ${dates[index]}`;
-                    img.onerror = () => {
-                        img.style.display = 'none'; // Hide if image doesn't exist
-                    };
-                    diagramDiv.appendChild(img);
+                    // Get the current date
+                    const today = new Date();
+
+                    // Generate the last 3 dates
+                    const dates = [];
+                    for (let i = 0; i < 3; i++) {
+                        const date = new Date(today);
+                        date.setDate(today.getDate() - i);
+                        const formattedDate = date.toISOString().split('T')[0];
+                        dates.push(formattedDate);
+                    }
+
+                    // Clear existing images
+                    diagramContainer.innerHTML = '';
+
+                    // Create a flex container for the images
+                    const flexContainer = document.createElement('div');
+                    flexContainer.style.display = 'flex';
+                    flexContainer.style.justifyContent = 'space-between';
+                    flexContainer.style.marginTop = '20px';
+
+                    // Load images
+                    dates.forEach(date => {
+                        const img = document.createElement('img');
+                        img.src = `correlation_diagrams/${location}/${date}.png`;
+                        img.alt = `${location} - ${date} Correlation Diagram`;
+                        img.style.width = '30%';
+                        img.style.border = '2px solid #ccc';
+                        img.style.borderRadius = '5px';
+
+                        // Add error handling
+                        img.onerror = () => {
+                            img.style.display = 'none';
+                            console.error(`Image not found: ${img.src}`);
+                        };
+
+                        flexContainer.appendChild(img);
+                    });
+
+                    diagramContainer.appendChild(flexContainer);
+
+                    // Update the dropdown button and active state
+                    document.querySelectorAll('.diagramsdropdown-content button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
                 });
             });
         });
+
+        const diagramsdropdownButton = document.querySelector('.diagramsdropdown button');
+
+        // Function to update the diagramsdropdown button text
+        function updatediagramsdropdownButton(locationName) {
+            if (diagramsdropdownButton) {
+                diagramsdropdownButton.textContent = locationName;
+            }
+            document.querySelectorAll('.diagramsdropdown-content button').forEach(button => {
+                button.classList.remove('active');
+                if (button.dataset.location === locationName) {
+                    button.classList.add('active');
+                }
+            });
+        }
 
         function handleError(error) {
             let errorMessage = "";

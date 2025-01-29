@@ -34,6 +34,11 @@ def weather_api():
         run_script("code/data_to_fiware/APIs/data_weather_api_to_fiware.py")
         time.sleep(600) 
 
+def weather_forecast_api():
+    while True:
+        run_script("code/data_to_fiware/APIs/data_weather_forecast_api_to_fiware.py")
+        time.sleep(600) 
+
 def weather_points_api():
     while True:
         run_script("code/data_to_fiware/APIs/data_points_weather_api_to_fiware.py")
@@ -61,6 +66,7 @@ if __name__ == "__main__":
     # Threads for periodic tasks
     periodic_threads = [
         threading.Thread(target=weather_api, daemon=True),
+        threading.Thread(target=weather_forecast_api, daemon=True),
         threading.Thread(target=weather_points_api, daemon=True),
         threading.Thread(target=weather_stations_points_api, daemon=True),
         threading.Thread(target=traffic_api, daemon=True),

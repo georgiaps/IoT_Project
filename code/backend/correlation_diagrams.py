@@ -40,19 +40,22 @@ def query_influxdb(client, bucket, point, measurement_type, field, start, stop):
     except Exception as exc:
         print(f"Error querying data for {point}: {exc}")
         return []
+            
 
-def plot_daily_diagrams(client, bucket, point, point_code, weather_field, weather_unit, date):
-    point_folder = os.path.join("code/backend/correlation_diagrams", point)
+def plot_daily_diagrams(client, bucket, point, point_code, weather_field, weather_unit, date): 
+    point_folder = os.path.join("code/frontend/correlation_diagrams", point)
     os.makedirs(point_folder, exist_ok=True)
     
-    for filename in os.listdir(point_folder):
-        if filename.endswith(".png"):
-            os.remove(os.path.join(point_folder, filename))
-
     for day_offset in range(3):
         current_date = (date - timedelta(days=day_offset)).date()
         start = datetime.combine(current_date, datetime.min.time())
         stop = datetime.combine(current_date, datetime.max.time())
+        
+        filename = os.path.join(point_folder, f"{current_date}.png")
+        
+        # If the file exists, it will be replaced with a new diagram
+        if os.path.exists(filename):
+            print(f"Diagram for {current_date} already exists, replacing it.")
 
         traffic_data = query_influxdb(
             client, bucket, point_code, "TrafficAPIData", "traffic_percentage", start, stop
@@ -68,19 +71,23 @@ def plot_daily_diagrams(client, bucket, point, point_code, weather_field, weathe
 
             if traffic_data:
                 traffic_times, traffic_values = zip(*traffic_data)
+                # Add +2 hours to the traffic times
+                traffic_times = [t + timedelta(hours=2) for t in traffic_times]
                 traffic_values = [val * 100 for val in traffic_values]
                 ax1.plot(traffic_times, traffic_values, label='Traffic Percentage', color='#75283d', linestyle='-')
-                ax1.set_ylabel('Traffic Percentage (%)', color='#75283d')
+                ax1.set_ylabel('Traffic Percentage (%)', color='#75283d', fontsize=18, labelpad=16)
                 ax1.tick_params(axis='y', labelcolor='#75283d')
 
             if weather_data:
                 weather_times, weather_values = zip(*weather_data)
+                # Add +2 hours to the weather times
+                weather_times = [t + timedelta(hours=2) for t in weather_times]
                 ax2.plot(weather_times, weather_values, label=f'{weather_field.capitalize()}', color='#2b6cb0', linestyle='--')
-                ax2.set_ylabel(f'{weather_field.capitalize()} ({weather_unit})', color='#2b6cb0')
+                ax2.set_ylabel(f'{weather_field.capitalize()} ({weather_unit})', color='#2b6cb0', fontsize=18, labelpad=16)
                 ax2.tick_params(axis='y', labelcolor='#2b6cb0')
 
-            plt.title(f"{point} - {current_date}")
-            ax1.set_xlabel("Time")
+            plt.title(f"{point} - {current_date}", fontsize=20)
+            ax1.set_xlabel("Time", fontsize=16, labelpad=15)
             ax1.grid(True)
 
             # Format x-axis to show only time
@@ -91,13 +98,14 @@ def plot_daily_diagrams(client, bucket, point, point_code, weather_field, weathe
             lines2, labels2 = ax2.get_legend_handles_labels()
             ax1.legend(lines1 + lines2, labels1 + labels2, loc='best')
 
-            filename = os.path.join(point_folder, f"{current_date}.png")
+            # Save the diagram, overwriting if the file exists
             plt.savefig(filename, bbox_inches='tight')
             plt.close()
-            print(f"Saved diagram: {filename}")
+            print(f"Saved or replaced diagram: {filename}")
         else:
             plt.close()
             print(f"No data found for {point} on {current_date}")
+
 
 def main():
     client = InfluxDBClient(url=INFLUXDB_URL, token=INFLUXDB_TOKEN, org=INFLUXDB_ORG)
