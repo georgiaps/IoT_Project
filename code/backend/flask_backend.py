@@ -147,6 +147,8 @@ def fetch_fiware_forecast_data():
                         if backend_name in average_differences:
                             for field in ["humidity", "pressure", "rain_1h", "temp", "wind_deg", "wind_speed"]:
                                 if field in adjusted_entry and field in average_differences[backend_name]:
+                                    if field == "rain_1h" and adjusted_entry[field] == 0:
+                                        continue  # Keep rain_1h as 0 if originally 0
                                     adjusted_entry[field] = round(adjusted_entry[field] + average_differences[backend_name][field], 2)
                         adjusted_forecast.append(adjusted_entry)
                     city_data[backend_name]["forecast"] = adjusted_forecast

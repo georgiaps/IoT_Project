@@ -1,3 +1,4 @@
+// Go on top whenever the page is loaded
 window.onload = function() {
     window.scrollTo({
         top: 0,
@@ -6,7 +7,7 @@ window.onload = function() {
     });
 };
 
-// Weather icon mapping
+// Weather icon mapping day
 const weatherIconsDay = {
     'clear sky': 'weather icons/clear sky day.png',
     'few clouds': 'weather icons/few clouds day.png',
@@ -38,6 +39,7 @@ const weatherIconsDay = {
     'dust': 'weather icons/mist.png',            
 };
 
+// Weather icon mapping night
 const weatherIconsNight = {
     'clear sky': 'weather icons/clear sky night.png',
     'few clouds': 'weather icons/few clouds night.png',
@@ -69,53 +71,6 @@ const weatherIconsNight = {
     'dust': 'weather icons/mist.png',            
 };
 
-// Function to update city weather overview
-function updateCityWeather(data) {
-    if (!data || !data.Patras || !data.Patras.weather) return;
-
-    const cityWeather = data.Patras.weather || {};;
-    
-    // Update weather icon
-    const weatherIcon = document.getElementById('weather-icon');
-    const description = cityWeather.Description?.toLowerCase() || 'clear sky';
-    weatherIcon.src = weatherIconsDay[description] || 'default weather.png';
-
-
-    // Helper function to handle display values with units
-    const displayValue = (value, unit) => {
-        if (value !== undefined && value !== null && value !== '') {
-            return value + unit;
-        }
-        return '--';
-    };
-    
-    // Update weather data
-    document.getElementById('city-description').textContent = cityWeather.Description || '--';
-    document.getElementById('city-temperature').textContent = displayValue(cityWeather.Temperature, '°C');
-    document.getElementById('city-humidity').textContent = displayValue(cityWeather.Humidity, '%');
-    document.getElementById('city-wind-speed').textContent = displayValue(cityWeather['Wind Speed'], ' km/h');
-    document.getElementById('city-rain').textContent = displayValue(cityWeather.Rain, ' mm');
-}
-
-function fetchGeneralCityWeather() {
-    fetch('http://172.20.10.6:8080/api/city-data')
-        .then(response => response.json())
-        .then(data => {
-            updateCityWeather(data);
-        })
-        .catch(error => console.error('Error fetching city data:', error));
-}
-
-// Call this when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    fetchGeneralCityWeather();
-});
-
-const map = L.map('map').setView([38.273530, 21.730154], 12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-}).addTo(map);
-
 const locations = [
     { name: 'Rio-Antirrio Bridge', coords: [38.320745, 21.773224], color: '#6d6a82' },
     { name: 'University Crossroad', coords: [38.290672, 21.780164], color: '#7091e6' },
@@ -133,8 +88,96 @@ const locations = [
     { name: 'Paralia', coords: [38.1994,21.6992], color: '#2c6182' }
 ];
 
+//NAVIGATION 
+
+// Set up the section navigation
+document.querySelectorAll('.nav-button').forEach(button => {
+    button.addEventListener('click', () => {
+        switchSection(button.dataset.section);
+    });
+});
+
+// Switch the section navigation
+function switchSection(sectionId) {
+    document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    
+    const button = document.querySelector(`[data-section="${sectionId}"]`);
+    if (button) button.classList.add('active');
+    
+    const section = document.getElementById(sectionId);
+    if (section) section.classList.add('active');
+}
+
+//HOME PAGE
+
+// CITY WEATHER OVERVIEW
+// Update city weather overview
+function updateCityWeather(data) {
+    if (!data || !data.Patras || !data.Patras.weather) return;
+
+    const cityWeather = data.Patras.weather || {};;
+    
+    // Update weather icon
+    const weatherIcon = document.getElementById('weather-icon');
+    const description = cityWeather.Description?.toLowerCase() || 'clear sky';
+    weatherIcon.src = weatherIconsDay[description] || 'default weather.png';
+
+
+    // Handle display values with units
+    const displayValue = (value, unit) => {
+        if (value !== undefined && value !== null && value !== '') {
+            return value + unit;
+        }
+        return '--';
+    };
+    
+    // Update weather data
+    document.getElementById('city-description').textContent = cityWeather.Description || '--';
+    document.getElementById('city-temperature').textContent = displayValue(cityWeather.Temperature, '°C');
+    document.getElementById('city-humidity').textContent = displayValue(cityWeather.Humidity, '%');
+    document.getElementById('city-wind-speed').textContent = displayValue(cityWeather['Wind Speed'], ' km/h');
+    document.getElementById('city-rain').textContent = displayValue(cityWeather.Rain, ' mm');
+}
+
+// Fetch weather data for city weather overview (url change needed)
+function fetchGeneralCityWeather() {
+    fetch('http://172.20.10.6:8080/api/city-data')
+        .then(response => response.json())
+        .then(data => {
+            updateCityWeather(data);
+        })
+        .catch(error => console.error('Error fetching city data:', error));
+}
+
+// Fetch city weather data when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    fetchGeneralCityWeather();
+});
+
+// MAP
+// Load the map
+const map = L.map('map').setView([38.273530, 21.730154], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
 const locationWeatherInfo = document.getElementById('loc-info');
 const locationTrafficInfo = document.getElementById('loc-info');
+
+// Custom marker icon definition
+const createCustomMarker = (color) => {
+    return L.divIcon({
+        html: `<svg width="14" height="26" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 8.4 12 20 12 20s12-11.6 12-20c0-6.63-5.37-12-12-12zm0 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" 
+            fill="${color}"/>
+        </svg>`,
+        className: 'custom-marker',
+        iconSize: [14, 26],
+        iconAnchor: [7, 26],
+        popupAnchor: [0, -32]
+    });
+};
 
 // Get the user's geolocation
 function getLocation() {
@@ -149,6 +192,7 @@ function getLocation() {
     }
 }
 
+// Show user's position
 function showPosition(position) {
     const userLat = position.coords.latitude;
     const userLon = position.coords.longitude;
@@ -179,24 +223,7 @@ function showPosition(position) {
 // Call getLocation on page load
 getLocation();
 
-// Set up the section navigation
-document.querySelectorAll('.nav-button').forEach(button => {
-    button.addEventListener('click', () => {
-        switchSection(button.dataset.section);
-    });
-});
-
-// Switch the section navigation
-function switchSection(sectionId) {
-    document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    
-    const button = document.querySelector(`[data-section="${sectionId}"]`);
-    if (button) button.classList.add('active');
-    
-    const section = document.getElementById(sectionId);
-    if (section) section.classList.add('active');
-}
+// CITY POINTS INFO PAGE
 
 // Function to show City Points section
 function showCityPointsSection() {
@@ -208,7 +235,7 @@ function showCityPointsSection() {
     document.getElementById('city-points').classList.add('active');
 }
 
-// Update weather and traffic location info when a location point is clicked
+// Update weather and traffic location info when a location point is clicked (url change needed)
 document.querySelectorAll('.location-item').forEach(item => {
     item.addEventListener('click', () => {
         const locationName = item.getAttribute('data-location');
@@ -229,21 +256,7 @@ document.querySelectorAll('.location-item').forEach(item => {
     });
 });
 
-// Custom marker icon definition
-const createCustomMarker = (color) => {
-    return L.divIcon({
-        html: `<svg width="14" height="26" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 8.4 12 20 12 20s12-11.6 12-20c0-6.63-5.37-12-12-12zm0 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" 
-            fill="${color}"/>
-        </svg>`,
-        className: 'custom-marker',
-        iconSize: [14, 26],
-        iconAnchor: [7, 26],
-        popupAnchor: [0, -32]
-    });
-};
-
-// Update weather and traffic location info when a marker in map is clicked
+// Update weather and traffic location info when a marker in map is clicked (url change needed)
 locations.forEach(loc => {
     const marker = L.marker(loc.coords, {
         icon: createCustomMarker(loc.color)
@@ -294,7 +307,7 @@ document.querySelectorAll('.infodropdown-content button').forEach(button => {
 
 const infodropdownButton = document.querySelector('.infodropdown button');
 
-// Function to update the infodropdown button text
+// Update the infodropdown button text
 function updateinfodropdownButton(locationName) {
     if (infodropdownButton) {
         infodropdownButton.textContent = locationName;
@@ -307,11 +320,13 @@ function updateinfodropdownButton(locationName) {
     });
 }
 
+// Fetch city points data when the page loads and refresh when refresh button is clicked
 document.addEventListener('DOMContentLoaded', fetchCityData);
 document.querySelector('.refresh-button').addEventListener('click', fetchCityData);
 
 let currentSelectedLocation = '';
 
+// Fetch city points data (url change needed)
 function fetchCityData() {
     /*fetch('http://192.168.1.6:8080/api/city-data') georgia*/
     /*fetch('http://192.168.1.144:8080/api/city-data') giorgos*/
@@ -334,7 +349,7 @@ function updateFrontend(data, location) {
     const weather = locationData.weather || {};
     const traffic = locationData.traffic || {};
 
-    // Helper function to handle display values with units
+    // Handle display values with units
     const displayValue = (value, unit) => {
         if (value !== undefined && value !== null && value !== '') {
             return value + unit;
@@ -367,14 +382,15 @@ function updateWeatherLocationInfo(location) {
 function updateTrafficLocationInfo(location) {
 }
 
-// Add periodic data refresh (optional)
+// Add periodic data refresh
 setInterval(fetchCityData, 30000);
 
+// SEARCH BUTTON
 // Reference the search input and form
 const searchInput = document.querySelector('.search-container input[type="text"]');
 const searchForm = document.querySelector('.search-container form');
 
-// Event listener for the search form submission
+// Event listener for the search form submission (url change needed)
 searchForm.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent the default form submission
 
@@ -404,7 +420,7 @@ searchForm.addEventListener('submit', (event) => {
             .catch(error => console.error('Error fetching forecast data:', error));
     }
 
-    // Highlight the matching location in the infodropdown (optional)
+    // Highlight the matching location in the infodropdown
     document.querySelectorAll('.infodropdown-content button').forEach(button => {
         button.classList.remove('active');
         if (button.dataset.location === location.name) {
@@ -413,6 +429,7 @@ searchForm.addEventListener('submit', (event) => {
     });
 });
 
+// WEATHER FORECAST
 // Function to format date as dd-MM-yyyy
 function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
@@ -421,7 +438,7 @@ function formatDate(date) {
     return `${day}-${month}-${year}`;
 }
 
-// Function to add days to a date
+// Add days to a date
 function addDays(date, days) {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -457,10 +474,6 @@ dates.forEach(date => {
     dateContent.appendChild(button);
 });
 
-
-
-
-
 let selectedLocation = '';
 let selectedDate = '';
 
@@ -490,6 +503,22 @@ function updateForecastData(data, location, buttonDate) {
         const forecast = dayForecasts.find(f => f.dt_txt.split(' ')[1] === time) || {};
         const hour = time.split(':')[0];
 
+        // Update weather icon and description based on time of day
+        const iconDict = (hour === '21') ? weatherIconsNight : weatherIconsDay;
+        const description = forecast.description?.toLowerCase() || 'clear sky';
+        
+        // Update weather icon
+        const weatherIcon = document.getElementById(`forecast-weather-icon-${hour}`);
+        if (weatherIcon) {
+            weatherIcon.src = iconDict[description] || 'weather icons/default weather.png';
+        }
+
+        // Update description
+        const descriptionElement = document.getElementById(`forecast-description-${hour}`);
+        if (descriptionElement) {
+            descriptionElement.textContent = forecast.description || ' ';
+        }
+
         // Update all weather parameters for this time slot
         document.getElementById(`forecast-temperature-${hour}`).textContent = 
             forecast.temp !== undefined ? `${forecast.temp}°C` : '--';
@@ -506,7 +535,7 @@ function updateForecastData(data, location, buttonDate) {
     });
 }
 
-// Modify the date button click handler
+// Modify the date button click handler (url change needed)
 function setupDateButtons() {
     const dateButtons = document.querySelectorAll('#dateContent button');
     dateButtons.forEach(button => {
@@ -528,7 +557,7 @@ function setupDateButtons() {
 
 const forecastdropdownButton = document.querySelector('.forecastdropdown button');
 
-// Function to update the forecast dropdown button text and active state
+// Update the forecast dropdown button text and active state
 function updateForecastDropdownButton(date) {
     const forecastDropdownButton = document.querySelector('.forecastdropdown button');
     if (forecastDropdownButton) {
@@ -542,8 +571,7 @@ function updateForecastDropdownButton(date) {
     });
 }
 
-
-
+// Handle selected location and update forecast data (url change needed)
 function setupLocationHandlers() {
     document.querySelectorAll('.infodropdown-content button').forEach(button => {
         button.addEventListener('click', () => {
@@ -552,7 +580,8 @@ function setupLocationHandlers() {
             
             if (!selectedDate) {
                 clearForecastData();
-            } else {
+            } 
+            else {
                 fetch('http://172.20.10.6:8080/api/city-data')
                     .then(response => response.json())
                     .then(data => {
@@ -564,26 +593,39 @@ function setupLocationHandlers() {
     });
 }
 
+// Clear forecast data
 function clearForecastData() {
-    const times = ['9', '15', '21'];
+    const times = ['09', '15', '21'];
     const parameters = ['temperature', 'humidity', 'wind-speed', 'wind-direction', 'rain', 'pressure'];
     
     times.forEach(time => {
+        // Clear weather icon and description
+        const weatherIcon = document.getElementById(`forecast-weather-icon-${time}`);
+        if (weatherIcon) {
+            weatherIcon.src = 'weather icons/default weather.png';
+        }
+        
+        const description = document.getElementById(`forecast-description-${time}`);
+        if (description) {
+            description.textContent = ' ';
+        }
+        
+        // Clear other weather parameters
         parameters.forEach(param => {
             document.getElementById(`forecast-${param}-${time}`).textContent = '--';
         });
     });
 }
-
+// Operate the followings when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     setupDateButtons();
     setupLocationHandlers();
     clearForecastData();
 });
 
+// DIAGRAMS PAGE
 
-        
-
+// Display the wanted diagrams 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.diagramsdropdown-content button').forEach(button => {
         button.addEventListener('click', function () {
@@ -654,7 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const diagramsdropdownButton = document.querySelector('.diagramsdropdown button');
 
-// Function to update the diagramsdropdown button text
+// Update the diagramsdropdown button text
 function updatediagramsdropdownButton(locationName) {
     if (diagramsdropdownButton) {
         diagramsdropdownButton.textContent = locationName;
@@ -667,6 +709,72 @@ function updatediagramsdropdownButton(locationName) {
     });
 }
 
+// Make the dropdown buttons' content disappear (url change needed)
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.infodropdown-content button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const dropdown = event.target.closest('.infodropdown');
+            const locationName = button.dataset.location;
+            if (locationName) {
+                updateWeatherLocationInfo(locationName);
+                updateTrafficLocationInfo(locationName);
+                updateinfodropdownButton(locationName);
+                if (dropdown) {
+                    dropdown.querySelector('.infodropdown-content').style.display = 'none';
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('.forecastdropdown-content button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const dropdown = event.target.closest('.forecastdropdown');
+            selectedDate = button.getAttribute('date');
+            updateForecastDropdownButton(selectedDate);
+            if (selectedLocation && selectedDate) {
+                fetch('http://172.20.10.6:8080/api/city-data')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateForecastData(data, selectedLocation, selectedDate);
+                    })
+                    .catch(error => console.error('Error fetching forecast data:', error));
+            }
+            if (dropdown) {
+                dropdown.querySelector('.forecastdropdown-content').style.display = 'none';
+            }
+        });
+    });
+
+    document.querySelectorAll('.diagramsdropdown-content button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const dropdown = event.target.closest('.diagramsdropdown');
+            const locationName = button.dataset.location;
+            if (locationName) {
+                updatediagramsdropdownButton(locationName);
+                if (dropdown) {
+                    dropdown.querySelector('.diagramsdropdown-content').style.display = 'none';
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('.infodropdown, .forecastdropdown, .diagramsdropdown').forEach(dropdown => {
+        dropdown.addEventListener('mouseenter', () => {
+            const content = dropdown.querySelector('.infodropdown-content, .forecastdropdown-content, .diagramsdropdown-content');
+            if (content) {
+                content.style.display = 'block';
+            }
+        });
+        dropdown.addEventListener('mouseleave', () => {
+            const content = dropdown.querySelector('.infodropdown-content, .forecastdropdown-content, .diagramsdropdown-content');
+            if (content) {
+                content.style.display = 'none';
+            }
+        });
+    });
+});
+
+// Handle Errors 
 function handleError(error) {
     let errorMessage = "";
     switch(error.code) {
