@@ -666,7 +666,7 @@ main {
 .forecast-weather-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: 0.6rem;
 }
 
 .forecast-weather-item {

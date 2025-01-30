@@ -7,10 +7,41 @@ window.onload = function() {
 };
 
 // Weather icon mapping
-const weatherIcons = {
-    'clear sky': 'weather icons/clear sky.png',
-    'few clouds': 'weather icons/few clouds.png',
-    'scattered clouds': 'weather icons/scattered clouds.png',
+const weatherIconsDay = {
+    'clear sky': 'weather icons/clear sky day.png',
+    'few clouds': 'weather icons/few clouds day.png',
+    'scattered clouds': 'weather icons/scattered clouds day.png',
+    'broken clouds': 'weather icons/broken clouds.png',
+    'overcast clouds': 'weather icons/broken clouds.png',
+    'shower rain': 'weather icons/shower rain.png',
+    'light rain': 'weather icons/shower rain.png',
+    'moderate rain': 'weather icons/shower rain.png',
+    'heavy intensity rain': 'weather icons/shower rain.png',
+    'very heavy rain': 'weather icons/shower rain.png',
+    'extreme rain': 'weather icons/shower rain.png',
+    'rain': 'weather icons/rain.png',
+    'drizzle': 'weather icons/rain.png',
+    'drizzle rain': 'weather icons/rain.png',
+    'thunderstorm': 'weather icons/thunderstorm.png',
+    'thunderstorm with light rain': 'weather icons/thunderstorm.png',
+    'thunderstorm with rain': 'weather icons/thunderstorm.png',
+    'thunderstorm with heavy rain': 'weather icons/thunderstorm.png',
+    'thunderstorm with drizzle': 'weather icons/thunderstorm.png',
+    'light thunderstorm': 'weather icons/thunderstorm.png',
+    'heavy thunderstorm': 'weather icons/thunderstorm.png',
+    'snow': 'weather icons/snow.png',
+    'light snow': 'weather icons/snow.png',
+    'light rain and snow': 'weather icons/snow.png',
+    'mist': 'weather icons/mist.png', 
+    'haze': 'weather icons/mist.png', 
+    'fog': 'weather icons/mist.png', 
+    'dust': 'weather icons/mist.png',            
+};
+
+const weatherIconsNight = {
+    'clear sky': 'weather icons/clear sky night.png',
+    'few clouds': 'weather icons/few clouds night.png',
+    'scattered clouds': 'weather icons/scattered clouds night.png',
     'broken clouds': 'weather icons/broken clouds.png',
     'overcast clouds': 'weather icons/broken clouds.png',
     'shower rain': 'weather icons/shower rain.png',
@@ -47,7 +78,7 @@ function updateCityWeather(data) {
     // Update weather icon
     const weatherIcon = document.getElementById('weather-icon');
     const description = cityWeather.Description?.toLowerCase() || 'clear sky';
-    weatherIcon.src = weatherIcons[description] || 'default weather.png';
+    weatherIcon.src = weatherIconsDay[description] || 'default weather.png';
 
 
     // Helper function to handle display values with units
