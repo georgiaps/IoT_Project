@@ -14,13 +14,13 @@ INFLUXDB_BUCKET = "MicroclimateTraffic-team08-Final"
 
 # Points configuration with units
 POINTS = {
-    "University Crossroad": ["diastaurwsh_panepisthmio", "temperature", "°C"],
+    "University Crossroad": ["diastaurwsh_panepisthmio", "rain_1h", "mm"],
     "Agyias Beach": ["plaz", "temperature", "°C"],
     "National Road Interchange": ["diastaurwsh_ethnikh", "rain_1h", "mm"],
     "Patras Centre": ["ermou", "temperature", "°C"],
-    "South Park": ["notio_parko", "wind_speed", "km/h"],
+    "South Park": ["notio_parko", "temperature", "°C"],
     "Dasyllio": ["dasyllio", "humidity", "%"],
-    "Rio-Antirrio Bridge": ["gefyra_rio_antirrio", "temperature", "°C"]
+    "Rio-Antirrio Bridge": ["gefyra_rio_antirrio", "wind_speed", "km/h"]
 }
 
 def query_influxdb(client, bucket, point, measurement_type, field, start, stop):
