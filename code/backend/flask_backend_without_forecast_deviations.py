@@ -2,7 +2,6 @@ from flask import Flask, jsonify
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask_cors import CORS
 import requests
-import json
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -23,18 +22,30 @@ location_mapping = {
     "Kato Sychaina": "WeatherAPIData_kato_sychaina",
     "Demenika": "WeatherAPIData_demenika",
     "Kastelokampos": "WeatherAPIData_kastelokampos",
-    "Patras": "WeatherAPIDataPatras",
-    "University of Patras": "UnifiedWeatherSensorDataUni"
+
+    "Patras": "WeatherAPIDataPatras"
 }
 
 forecast_entity = "WeatherForecastAPIDataPatras"
 
-# Load average differences from JSON
-with open("code/backend/average_differences.json", "r") as json_file:
-    average_differences = json.load(json_file)
-
 # Initialize data store
-city_data = {location: {} for location in location_mapping.keys()}
+city_data = {
+    "University Crossroad": {},
+    "Agyias Beach": {},
+    "National Road Interchange": {},
+    "Patras Centre": {},
+    "Gounarh Road": {},
+    "South Park": {},
+    "Dasyllio": {},
+    "Rio-Antirrio Bridge": {},
+    "Leuka": {},
+    "Paralia": {},
+    "Kato Sychaina": {},
+    "Demenika": {},
+    "Kastelokampos": {},
+    "Patras": {},
+    "University of Patras": {}
+}
 
 # FIWARE API endpoint
 FIWARE_BASE_URL = "http://150.140.186.118:1026/v2/entities"
@@ -47,7 +58,7 @@ def fetch_fiware_data():
         # Fetch weather data
         weather_response = requests.get(f"{FIWARE_BASE_URL}/{fiware_entity}")
 
-        if (weather_response.status_code == 200) & (backend_name != "Patras") & (backend_name != "University of Patras"):
+        if (weather_response.status_code == 200) & (backend_name != "Patras"):
             try:
                 weather_data = weather_response.json()
                 city_data[backend_name]["weather"] = {
@@ -83,7 +94,7 @@ def fetch_fiware_data():
         # Fetch traffic data
         traffic_response = requests.get(f"{FIWARE_BASE_URL}/{traffic_entity}")
 
-        if (traffic_response.status_code == 200) & (backend_name != "Patras") & (backend_name != "University of Patras"):
+        if (traffic_response.status_code == 200) & (backend_name != "Patras"):
             try:
                 traffic_data = traffic_response.json()
                 city_data[backend_name]["traffic"] = {
@@ -129,10 +140,11 @@ def fetch_fiware_uni_data():
         except Exception as e:
             print(f"Error processing traffic data for university of patras: {e}")
 
-
 def fetch_fiware_forecast_data():
     """Fetch updated forecast data from FIWARE and update city_data."""
+    
     forecast_response = requests.get(f"{FIWARE_BASE_URL}/{forecast_entity}")
+
     if forecast_response.status_code == 200:
         try:
             forecast_data = forecast_response.json()
@@ -141,22 +153,18 @@ def fetch_fiware_forecast_data():
             # Update forecast data for all locations
             for backend_name, _ in location_mapping.items():
                 if backend_name != "Patras":
-                    adjusted_forecast = []
-                    for entry in forecast_values:
-                        adjusted_entry = entry.copy()
-                        if backend_name in average_differences:
-                            for field in ["humidity", "pressure", "rain_1h", "temp", "wind_deg", "wind_speed"]:
-                                if field in adjusted_entry and field in average_differences[backend_name]:
-                                    adjusted_entry[field] = round(adjusted_entry[field] + average_differences[backend_name][field], 2)
-                        adjusted_forecast.append(adjusted_entry)
-                    city_data[backend_name]["forecast"] = adjusted_forecast
+                    city_data[backend_name]["forecast"] = forecast_values
 
-            print(f"Updated forecast data for all locations")
+            # Manually update "University of Patras"
+            city_data["University of Patras"]["forecast"] = forecast_values
+
+            print(f"Updated forecast data for all locations, including University of Patras.")
+        
         except Exception as e:
             print(f"Error processing forecast data: {e}")
     else:
         print(f"Failed to fetch forecast data: {forecast_response.status_code} - {forecast_response.text}")
-
+    
 # Schedule FIWARE data updates every 10 minutes
 scheduler = BackgroundScheduler()
 scheduler.add_job(fetch_fiware_data, 'interval', minutes=10)
@@ -176,3 +184,8 @@ if __name__ == '__main__':
     fetch_fiware_uni_data()
     fetch_fiware_forecast_data()
     app.run(host='0.0.0.0', port=8080, debug=True)
+
+
+
+
+    

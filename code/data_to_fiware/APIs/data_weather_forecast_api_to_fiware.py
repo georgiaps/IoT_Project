@@ -39,6 +39,7 @@ def filter_weather_data(weather_data):
         dt_obj = datetime.strptime(dt_txt, "%Y-%m-%d %H:%M:%S")
         
         if tomorrow.date() <= dt_obj.date() <= three_days_later.date() and dt_txt.split()[1] in valid_hours:
+            weather = entry.get("weather", [])
             filtered_data.append({
                 "dt": entry.get("dt"),
                 "dt_txt": dt_txt,
@@ -47,9 +48,10 @@ def filter_weather_data(weather_data):
                 "pressure": entry["main"].get("pressure"),
                 "wind_speed": entry["wind"].get("speed"),
                 "wind_deg": entry["wind"].get("deg"),
-                "rain_1h": entry.get("rain", {}).get("1h", 0)
+                "rain_1h": entry.get("rain", {}).get("1h", 0),
+                "description": weather[0].get("description")
             })
-    
+
     return filtered_data
 
 def check_and_create_entity():
