@@ -136,8 +136,31 @@ function updateCityWeather(data) {
     document.getElementById('city-description').textContent = cityWeather.Description || '--';
     document.getElementById('city-temperature').textContent = displayValue(cityWeather.Temperature, '°C');
     document.getElementById('city-humidity').textContent = displayValue(cityWeather.Humidity, '%');
-    document.getElementById('city-wind-speed').textContent = displayValue(cityWeather['Wind Speed'], ' km/h');
-    document.getElementById('city-rain').textContent = displayValue(cityWeather.Rain, ' mm');
+    document.getElementById('city-wind-speed').textContent = displayValue(cityWeather['Wind Speed'], ' m/sec');
+    document.getElementById('city-rain').textContent = displayValue(cityWeather.Rain, 'mm');
+}
+
+// ALERTS PAGE
+
+// Update wind speed alert for Rio-Antirrio bridge
+function updateWindAlert(data) {
+    if (!data || !data['Rio-Antirrio Bridge'] || !data['Rio-Antirrio Bridge'].alerts) return;
+    
+    const windAlert = data['Rio-Antirrio Bridge'].alerts.wind_speed;
+    const alertElement = document.getElementById('wind-alert');
+    if (alertElement) {
+        alertElement.textContent = windAlert;
+    }
+}
+// Update temperature alert for Patras Centre
+function updateTemperatureAlert(data) {
+    if (!data || !data['Patras Centre'] || !data['Patras Centre'].alerts) return;
+    
+    const temperatureAlert = data['Patras Centre'].alerts.temperature;
+    const alertElement = document.getElementById('temperature-alert');
+    if (alertElement) {
+        alertElement.textContent = temperatureAlert;
+    }
 }
 
 // Fetch weather data for city weather overview (url change needed)
@@ -146,6 +169,8 @@ function fetchGeneralCityWeather() {
         .then(response => response.json())
         .then(data => {
             updateCityWeather(data);
+            updateTemperatureAlert(data);
+            updateWindAlert(data);
         })
         .catch(error => console.error('Error fetching city data:', error));
 }
@@ -360,14 +385,14 @@ function updateFrontend(data, location) {
     // Weather information
     document.getElementById('temperature').textContent = displayValue(weather.Temperature, '°C');
     document.getElementById('humidity').textContent = displayValue(weather.Humidity, '%');
-    document.getElementById('wind-speed').textContent = displayValue(weather['Wind Speed'], ' km/h');
+    document.getElementById('wind-speed').textContent = displayValue(weather['Wind Speed'], ' m/sec');
     document.getElementById('wind-direction').textContent = displayValue(weather['Wind Direction'], '°');
     document.getElementById('rain').textContent = displayValue(weather.Rain, ' mm');
     document.getElementById('pressure').textContent = displayValue(weather.Pressure, ' hPa');
 
     // Traffic information
-    document.getElementById('current-speed').textContent = displayValue(traffic['Current Speed'], ' km/h');
-    document.getElementById('free-flow-speed').textContent = displayValue(traffic['Free Flow Speed'], ' km/h');
+    document.getElementById('current-speed').textContent = displayValue(traffic['Current Speed'], ' m/sec');
+    document.getElementById('free-flow-speed').textContent = displayValue(traffic['Free Flow Speed'], ' m/sec');
     document.getElementById('traffic-percentage').textContent = displayValue(((traffic['Traffic Percentage'])*100).toFixed(0), '%');
 }
 
@@ -525,7 +550,7 @@ function updateForecastData(data, location, buttonDate) {
         document.getElementById(`forecast-humidity-${hour}`).textContent = 
             forecast.humidity !== undefined ? `${forecast.humidity}%` : '--';
         document.getElementById(`forecast-wind-speed-${hour}`).textContent = 
-            forecast.wind_speed !== undefined ? `${forecast.wind_speed} km/h` : '--';
+            forecast.wind_speed !== undefined ? `${forecast.wind_speed} m/sec` : '--';
         document.getElementById(`forecast-wind-direction-${hour}`).textContent = 
             forecast.wind_deg !== undefined ? `${forecast.wind_deg}°` : '--';
         document.getElementById(`forecast-rain-${hour}`).textContent = 

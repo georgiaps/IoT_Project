@@ -20,7 +20,7 @@ POINTS = {
     "Patras Centre": ["ermou", "temperature", "°C"],
     "South Park": ["notio_parko", "temperature", "°C"],
     "Dasyllio": ["dasyllio", "humidity", "%"],
-    "Rio-Antirrio Bridge": ["gefyra_rio_antirrio", "wind_speed", "km/h"]
+    "Rio-Antirrio Bridge": ["gefyra_rio_antirrio", "wind_speed", "m/sec"]
 }
 
 def query_influxdb(client, bucket, point, measurement_type, field, start, stop):

@@ -58,6 +58,30 @@ def fetch_fiware_data():
                     "Rain": weather_data.get("rain_1h", {}).get("value", "N/A"),
                     "Pressure": weather_data.get("pressure", {}).get("value", "N/A")
                 }
+
+                # Add alerts
+                alerts = {}
+                
+                # Wind Speed Alert for Rio-Antirrio Bridge
+                if backend_name == "Rio-Antirrio Bridge":
+                    wind_speed = weather_data.get("wind_speed", {}).get("value", 0)
+                    alerts["wind_speed"] = (
+                        "Strong winds detected on the Rio-Antirrio Bridge! For your safety, restrictions may apply to certain vehicles and micromobility users. Please drive with caution and check for updates before crossing."
+                        if wind_speed > 8
+                        else "No active alerts at this moment for Rio-Antirrio Bridge!"
+                    )
+
+                # Temperature Alert for Patras Centre
+                if backend_name == "Patras Centre":
+                    temperature = weather_data.get("temperature", {}).get("value", 0)
+                    alerts["temperature"] = (
+                        "High temperatures recorded! Extreme heat can affect vehicle performance, road conditions, and pedestrian safety. Stay hydrated, avoid unnecessary travel, and take extra precautions when using micromobility options."
+                        if temperature > 40
+                        else "No active alerts at this moment for Patras Centre!"
+                    )
+
+                city_data[backend_name]["alerts"] = alerts
+
             except Exception as e:
                 print(f"Error processing weather data for {fiware_entity}: {e}")
 
