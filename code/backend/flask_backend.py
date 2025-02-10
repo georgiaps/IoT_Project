@@ -66,7 +66,10 @@ def fetch_fiware_data():
                 if backend_name == "Rio-Antirrio Bridge":
                     wind_speed = weather_data.get("wind_speed", {}).get("value", 0)
                     alerts["wind_speed"] = (
-                        "Strong winds detected on the Rio-Antirrio Bridge! For your safety, restrictions may apply to certain vehicles and micromobility users. Please drive with caution and check for updates before crossing."
+                        """Strong winds detected on the Rio-Antirrio Bridge! For your 
+                        safety, restrictions may apply to certain vehicles and 
+                        micromobility users. Please drive with caution and check 
+                        for updates before crossing."""
                         if wind_speed > 8
                         else "No active alerts at this moment for Rio-Antirrio Bridge!"
                     )
@@ -75,9 +78,32 @@ def fetch_fiware_data():
                 if backend_name == "Patras Centre":
                     temperature = weather_data.get("temperature", {}).get("value", 0)
                     alerts["temperature"] = (
-                        "High temperatures recorded! Extreme heat can affect vehicle performance, road conditions, and pedestrian safety. Stay hydrated, avoid unnecessary travel, and take extra precautions when using micromobility options."
+                        """High temperatures recorded! Extreme heat can affect vehicle performance, 
+                        road conditions, and pedestrian safety. Stay hydrated, avoid unnecessary travel, 
+                        and take extra precautions when using micromobility options."""
                         if temperature > 40
                         else "No active alerts at this moment for Patras Centre!"
+                    )
+
+                # Rain Alert for National Road Interchange
+                if backend_name == "National Road Interchange":
+                    rain_1h = weather_data.get("rain_1h", {}).get("value", 0)
+                    alerts["rain_1h"] = (
+                        """Excessive rain can make the sharp turn at the interchange dangerous. 
+                        Reduce speed, drive carefully, and stay alert to prevent accidents."""
+                        if rain_1h > 3.5
+                        else "No active alerts at this moment for National Road Interchange!"
+                    )
+
+                # Rain Alert for Agyias Beach
+                if backend_name == "Agyias Beach":
+                    rain_1h = weather_data.get("rain_1h", {}).get("value", 0)
+                    alerts["rain_1h"] = (
+                        """Rainfall above 4mm may cause flooding, making roads 
+                        unsafe for vehicles and micromobility users. Avoid the 
+                        area or proceed with extreme caution."""
+                        if rain_1h > 4
+                        else "No active alerts at this moment for Agyias Beach!"
                     )
 
                 city_data[backend_name]["alerts"] = alerts

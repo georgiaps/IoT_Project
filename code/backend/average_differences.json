@@ -1,114 +1,114 @@
 {
     "University Crossroad": {
-        "humidity": 0.06,
-        "pressure": 0.08,
-        "rain_1h": -0.01,
-        "temp": -0.03,
-        "wind_deg": 3.06,
-        "wind_speed": -0.15
+        "humidity": -0.1,
+        "pressure": 0.12,
+        "rain_1h": -0.0,
+        "temp": -0.13,
+        "wind_deg": 2.3,
+        "wind_speed": -0.25
     },
     "Agyias Beach": {
-        "humidity": 0.1,
-        "pressure": 0.0,
+        "humidity": -0.1,
+        "pressure": 0.01,
         "rain_1h": -0.0,
-        "temp": 0.19,
-        "wind_deg": 0.95,
-        "wind_speed": -0.04
+        "temp": 0.09,
+        "wind_deg": -1.29,
+        "wind_speed": -0.03
     },
     "National Road Interchange": {
-        "humidity": 0.18,
+        "humidity": 0.03,
         "pressure": 0.08,
         "rain_1h": -0.0,
-        "temp": 0.01,
-        "wind_deg": 2.2,
-        "wind_speed": -0.1
+        "temp": -0.1,
+        "wind_deg": 2.1,
+        "wind_speed": -0.21
     },
     "Patras Centre": {
-        "humidity": 0.03,
-        "pressure": -0.0,
+        "humidity": -0.05,
+        "pressure": 0.0,
         "rain_1h": -0.0,
-        "temp": -0.08,
-        "wind_deg": 0.05,
+        "temp": -0.07,
+        "wind_deg": -0.18,
         "wind_speed": 0.0
     },
     "Gounarh Road": {
-        "humidity": 0.05,
-        "pressure": -0.01,
+        "humidity": -0.03,
+        "pressure": 0.0,
         "rain_1h": -0.0,
-        "temp": 0.05,
-        "wind_deg": -0.04,
+        "temp": 0.06,
+        "wind_deg": -0.02,
         "wind_speed": -0.0
     },
     "South Park": {
-        "humidity": 0.01,
-        "pressure": -0.02,
-        "rain_1h": -0.0,
+        "humidity": -0.03,
+        "pressure": -0.05,
+        "rain_1h": 0.01,
         "temp": 0.09,
-        "wind_deg": -2.56,
-        "wind_speed": -0.09
+        "wind_deg": -0.43,
+        "wind_speed": -0.14
     },
     "Dasyllio": {
-        "humidity": 0.15,
-        "pressure": -0.01,
+        "humidity": -0.07,
+        "pressure": -0.0,
         "rain_1h": -0.0,
-        "temp": -0.29,
-        "wind_deg": -0.08,
+        "temp": -0.38,
+        "wind_deg": 0.0,
         "wind_speed": -0.0
     },
     "Rio-Antirrio Bridge": {
-        "humidity": 0.08,
-        "pressure": 0.06,
+        "humidity": -0.07,
+        "pressure": 0.16,
         "rain_1h": -0.0,
-        "temp": 0.13,
-        "wind_deg": 4.53,
-        "wind_speed": -0.15
+        "temp": 0.08,
+        "wind_deg": 0.86,
+        "wind_speed": -0.41
     },
     "Leuka": {
-        "humidity": -17.58,
-        "pressure": -0.01,
-        "rain_1h": 0.01,
-        "temp": 3.46,
-        "wind_deg": -13.45,
-        "wind_speed": -0.28
+        "humidity": -19.17,
+        "pressure": -0.05,
+        "rain_1h": 0.02,
+        "temp": 3.07,
+        "wind_deg": -2.21,
+        "wind_speed": -0.45
     },
     "Paralia": {
-        "humidity": -12.97,
-        "pressure": -0.04,
-        "rain_1h": 0.01,
-        "temp": 2.11,
-        "wind_deg": -19.76,
-        "wind_speed": -0.22
+        "humidity": -17.73,
+        "pressure": -0.19,
+        "rain_1h": 0.0,
+        "temp": 2.56,
+        "wind_deg": -7.82,
+        "wind_speed": -0.19
     },
     "Kato Sychaina": {
-        "humidity": -14.34,
-        "pressure": 0.05,
+        "humidity": -18.4,
+        "pressure": 0.07,
         "rain_1h": 0.0,
-        "temp": 1.67,
-        "wind_deg": 1.53,
-        "wind_speed": 0.0
+        "temp": 2.45,
+        "wind_deg": 2.13,
+        "wind_speed": -0.19
     },
     "Demenika": {
-        "humidity": -24.05,
-        "pressure": -0.01,
-        "rain_1h": 0.01,
-        "temp": 7.29,
-        "wind_deg": -13.8,
-        "wind_speed": -0.28
+        "humidity": -24.35,
+        "pressure": -0.05,
+        "rain_1h": 0.02,
+        "temp": 6.57,
+        "wind_deg": -2.27,
+        "wind_speed": -0.46
     },
     "Kastelokampos": {
-        "humidity": -15.67,
-        "pressure": 0.06,
+        "humidity": -18.87,
+        "pressure": 0.11,
         "rain_1h": 0.0,
-        "temp": 5.46,
-        "wind_deg": 2.87,
-        "wind_speed": -0.02
+        "temp": 5.43,
+        "wind_deg": 2.26,
+        "wind_speed": -0.23
     },
     "University of Patras": {
-        "humidity": -1.21,
-        "pressure": -11.02,
-        "rain_1h": 117.34,
-        "temp": -0.41,
-        "wind_deg": -13.43,
-        "wind_speed": -0.34
+        "humidity": -3.97,
+        "pressure": -10.86,
+        "rain_1h": 97.48,
+        "temp": -0.28,
+        "wind_deg": 8.16,
+        "wind_speed": -0.65
     }
 }

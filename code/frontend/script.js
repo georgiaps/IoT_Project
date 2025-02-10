@@ -88,6 +88,23 @@ const locations = [
     { name: 'Paralia', coords: [38.1994,21.6992], color: '#2c6182' }
 ];
 
+const traffic_forecast_mapping = {
+    "University Crossroad": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=4&__feature.dashboardSceneSolo",
+    "Agyias Beach": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=13&__feature.dashboardSceneSolo",
+    "National Road Interchange": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=3&__feature.dashboardSceneSolo",
+    "Patras Centre": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=5&__feature.dashboardSceneSolo",
+    "Gounarh Road": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=7&__feature.dashboardSceneSolo",
+    "South Park": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=11&__feature.dashboardSceneSolo",
+    "Dasyllio": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Legend&orgId=2&theme=light&panelId=1&__feature.dashboardSceneSolo",
+    "Rio-Antirrio Bridge": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=6&__feature.dashboardSceneSolo",
+    "Leuka": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=10&__feature.dashboardSceneSolo",
+    "Paralia": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=12&__feature.dashboardSceneSolo",
+    "Kato Sychaina": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=9&__feature.dashboardSceneSolo",
+    "Demenika": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=2&__feature.dashboardSceneSolo",
+    "Kastelokampos": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=8&__feature.dashboardSceneSolo",
+    "University of Patras": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=14&__feature.dashboardSceneSolo"
+}
+
 //NAVIGATION 
 
 // Set up the section navigation
@@ -162,6 +179,26 @@ function updateTemperatureAlert(data) {
         alertElement.textContent = temperatureAlert;
     }
 }
+// Update rain alert for National Road Interchange
+function updateRainAlertEthnikh(data) {
+    if (!data || !data['National Road Interchange'] || !data['National Road Interchange'].alerts) return;
+    
+    const rainAlertEthnikh = data['National Road Interchange'].alerts.rain_1h;
+    const alertElement = document.getElementById('rain-alert-ethnikh');
+    if (alertElement) {
+        alertElement.textContent = rainAlertEthnikh;
+    }
+}
+// Update rain alert for Agyias Beach
+function updateRainAlertPlaz(data) {
+    if (!data || !data['Agyias Beach'] || !data['Agyias Beach'].alerts) return;
+    
+    const rainAlertPlaz = data['Agyias Beach'].alerts.rain_1h;
+    const alertElement = document.getElementById('rain-alert-plaz');
+    if (alertElement) {
+        alertElement.textContent = rainAlertPlaz;
+    }
+}
 
 // Fetch weather data for city weather overview (url change needed)
 function fetchGeneralCityWeather() {
@@ -171,6 +208,8 @@ function fetchGeneralCityWeather() {
             updateCityWeather(data);
             updateTemperatureAlert(data);
             updateWindAlert(data);
+            updateRainAlertEthnikh(data);
+            updateRainAlertPlaz(data)
         })
         .catch(error => console.error('Error fetching city data:', error));
 }
@@ -269,6 +308,7 @@ document.querySelectorAll('.location-item').forEach(item => {
             selectedLocation = locationName; // Update selectedLocation
             updateWeatherLocationInfo(locationName);
             updateTrafficLocationInfo(locationName);
+            updateTrafficForecastIframe(locationName);
             if (selectedDate) {
                 fetch('http://172.20.10.6:8080/api/city-data')
                     .then(response => response.json())
@@ -297,6 +337,7 @@ locations.forEach(loc => {
         selectedLocation = loc.name; // Update selectedLocation
         updateWeatherLocationInfo(loc.name);
         updateTrafficLocationInfo(loc.name);
+        updateTrafficForecastIframe(loc.name);
         if (selectedDate) {
             fetch('http://172.20.10.6:8080/api/city-data')
                 .then(response => response.json())
@@ -391,8 +432,8 @@ function updateFrontend(data, location) {
     document.getElementById('pressure').textContent = displayValue(weather.Pressure, ' hPa');
 
     // Traffic information
-    document.getElementById('current-speed').textContent = displayValue(traffic['Current Speed'], ' m/sec');
-    document.getElementById('free-flow-speed').textContent = displayValue(traffic['Free Flow Speed'], ' m/sec');
+    document.getElementById('current-speed').textContent = displayValue(traffic['Current Speed'], ' km/h');
+    document.getElementById('free-flow-speed').textContent = displayValue(traffic['Free Flow Speed'], ' km/h');
     document.getElementById('traffic-percentage').textContent = displayValue(((traffic['Traffic Percentage'])*100).toFixed(0), '%');
 }
 
@@ -614,6 +655,7 @@ function setupLocationHandlers() {
                     })
                     .catch(error => console.error('Error fetching forecast data:', error));
             }
+            updateTrafficForecastIframe(selectedLocation);
         });
     });
 }
@@ -647,6 +689,14 @@ document.addEventListener('DOMContentLoaded', () => {
     setupLocationHandlers();
     clearForecastData();
 });
+
+// TRAFFIC FORECAST
+function updateTrafficForecastIframe(location) {
+    const iframe = document.querySelector('.traffic-forecast-container iframe');
+    if (iframe && traffic_forecast_mapping[location]) {
+        iframe.src = traffic_forecast_mapping[location];
+    }
+}
 
 // DIAGRAMS PAGE
 

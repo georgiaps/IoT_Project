@@ -235,7 +235,7 @@
                     </div>
                 </div>
 
-                <h2>Microclimate Localized Forecast</h2>
+                <h2>Localized Microclimate Forecast</h2>
                 <div class="forecastdropdowncontainer">
                     <div class="forecastdropdown">
                         <button>Date</button>
@@ -344,6 +344,12 @@
                         </div>
                     </div>
                 </div>
+                <h2>Localized Traffic Forecast</h2>
+                <div class="traffic-forecast-container">
+                    <div class="traffic-forecast">
+                        <iframe src="https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=15&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                    </div>
+                </div>
 
             </div>
         </section>
@@ -411,7 +417,7 @@
             <h2>Wind Speed</h2>
             <div class="alert-container">
                 <div class="alert">
-                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/eec64477j1blse/weather-conditions-thresholds?from=now-7d&to=nowtimezone=browser&orgId=2&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/eec64477j1blse/weather-conditions-thresholds?from=now-11d&to=now&timezone=browser&orgId=2&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
                 </div>
                 <div class="alert">
                     <div class="text">
@@ -441,7 +447,41 @@
                     <div id="temperature-alert"></div>
                 </div>
                 <div class="alert">
-                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/eec64477j1blse/weather-conditions-thresholds?from=now-7d&to=now&timezone=browser&orgId=2&theme=light&panelId=2&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/eec64477j1blse/weather-conditions-thresholds?from=now-11d&to=now&timezone=browser&orgId=2&theme=light&panelId=2&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <h2>Rain Amount</h2>
+            <div class="alert-container">
+                <div class="alert">
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/eec64477j1blse/weather-conditions-thresholds?from=now-11d&to=now&timezone=browser&showCategory=Override%202&orgId=2&theme=light&panelId=4&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                </div>
+                <div class="alert">
+                    <div class="text">
+                        <p>When rainfall exceeds 3.5mm at the National Road Interchange, road conditions deteriorate rapidly, increasing 
+                            the risk of skidding and reduced visibility—especially at the sharp and dangerous turn in this area. Wet pavement 
+                            can make braking less effective, while pooled water can lead to aquaplaning, making it crucial for drivers to 
+                            slow down and remain vigilant. This alert serves as an early warning, urging extra caution to prevent accidents 
+                            in this high-risk zone.</p>
+                    </div>
+                    <h2>Current Alerts</h2>
+                    <div id="rain-alert-ethnikh"></div>
+                </div>
+            </div>
+            <div class="alert-container">
+                <div class="alert">
+                    <div class="text">
+                        <p>Excessive rainfall near Agyias Beach significantly increases the risk of flooding, making both the roadway 
+                            and the adjacent bicycle path hazardous for vehicles, cyclists, and pedestrians. Water accumulation can reduce 
+                            traction, cause hydroplaning, and create unpredictable conditions for micromobility users. This alert helps 
+                            travelers stay informed and take necessary precautions, ensuring safer movement in this flood-prone coastal area, 
+                            especially during heavy downpours.</p>
+                    </div>
+                    <h2>Current Alerts</h2>
+                    <div id="rain-alert-plaz"></div>
+                </div>
+                <div class="alert">
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/eec64477j1blse/weather-conditions-thresholds?from=now-11d&to=now&timezone=browser&showCategory=Override%202&orgId=2&theme=light&panelId=3&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
                 </div>
             </div>
         </section>
