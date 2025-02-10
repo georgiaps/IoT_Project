@@ -64,7 +64,7 @@ traffic_difference = np.subtract(rainy_traffic_values, sunny_traffic_values)
 
 # Calculate correlation
 if len(rain_values) > 1:
-    correlation, p_value = pearsonr(rain_values, rainy_traffic_values)
+    correlation, p_value = pearsonr(sunny_traffic_values, rainy_traffic_values)
     print(f"\nCorrelation index between rain and traffic: {correlation:.2f}")
     print(f"P-value: {p_value:.2e}")
 else:
@@ -72,8 +72,8 @@ else:
 
 # Plot results
 plt.figure(figsize=(12, 6))
-plt.plot(rainy_traffic_times, rainy_traffic_values, label="Rainy Traffic", color='#2b6cb0', marker="o")
-plt.plot(sunny_traffic_times, sunny_traffic_values, label="Sunny Traffic", color='#75283d', marker="o")
+plt.plot(rainy_traffic_times, rainy_traffic_values, label="Rainy Day", color='#2b6cb0', marker="o")
+plt.plot(sunny_traffic_times, sunny_traffic_values, label="Sunny Day", color='#75283d', marker="o")
 plt.xlabel("Time", fontsize=14)
 plt.xticks(rainy_traffic_times[::4], rotation=30)
 plt.ylabel("Traffic Percentage", fontsize=14, labelpad=16)
