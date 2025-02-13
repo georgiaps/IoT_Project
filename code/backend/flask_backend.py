@@ -30,7 +30,7 @@ location_mapping = {
 forecast_entity = "WeatherForecastAPIDataPatras"
 
 # Load average differences from JSON
-with open("code/backend/average_differences.json", "r") as json_file:
+with open("code/backend/average_differences.json", "r") as json_file: #"code/backend/average_differences"
     average_differences = json.load(json_file)
 
 # Initialize data store
@@ -220,6 +220,19 @@ scheduler.start()
 def get_city_data():
     """Endpoint to retrieve updated city data."""
     return jsonify(city_data)
+
+from flask import Flask, render_template, send_from_directory, jsonify
+import os
+
+# Serve the main HTML page
+@app.route('/')
+def serve_index():
+    return render_template('index.html')
+
+# Serve static files like CSS and JS
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('static', filename)
 
 # Run Flask app
 if __name__ == '__main__':

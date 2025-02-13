@@ -5,759 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Microclimate And Traffic Analysis</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<style>
-    /*GENERAL*/
-    :root {
-        --primary: #2c5282;
-        --secondary: #4299e1;
-        --accent: #2b6cb0;
-        --background: #f7fafc;
-        --card: #ffffff;
-        --text: #2d3748;
-        --border: #e2e8f0;
-        /*--contrast: #75283d;*/
-    }
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: system-ui, -apple-system, sans-serif;
-    }
-
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
-
-    body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh; /* viewport height */
-        background: var(--background);
-        color: var(--text);
-    }
-
-    main {
-        flex: 1 0 auto; /* This makes the main content area expand */
-    }
-
-    /*HEADER*/
-    .header {
-        background: var(--card);
-        padding: 1.8rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-
-    .header h1 {
-        color: var(--primary);
-        font-size: 2rem;
-        text-align: center;
-        font-weight: 800;
-        letter-spacing: -0.025em;
-    }
-
-    /*LOGO*/
-    .logo {
-        position: absolute;
-        top: 15px;
-        left: 25px;
-        width: 150px;
-        height: 150px;
-        z-index: 2;
-    }
-
-    /*NAVIGATION*/
-    .nav {
-        background: var(--card);
-        padding: 1rem;
-        display: flex;
-        justify-content: center;
-        gap: 2.5rem;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        z-index: 1;
-    }
-
-    /*NAVIGATION - BUTTONS*/
-    .nav-button {
-        background: transparent;
-        color: var(--text);
-        border: none;
-        padding: 0.5rem 1.5rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s;
-        font-size: 1.15em;
-    }
-
-    .nav-button:hover {
-        background: var(--background);
-        color: var(--primary);
-    }
-
-    .nav-button.active {
-        background: var(--primary);
-        color: white;
-    }
-
-    /*NAVIGATION - SEARCH*/
-    .nav .search-container {
-        position: absolute;
-        right: 30px;
-    }
-
-    .nav input[type=text] {
-        padding: 6px;
-        margin-top: 8px;
-        font-size: 14px;
-        border-color: #ddd;
-        border-radius: 0.2rem;
-    }
-
-    .nav .search-container button {
-        float: right;
-        padding: 6px 10px;
-        margin-top: 7.5px;
-        margin-right: 4px;
-        border-radius: 0.2rem;
-        background: #ddd;
-        font-size: 17px;
-        border: none;
-        cursor: pointer;
-    }
-
-    .nav .search-container button i {  /*magnifying glass icon*/
-        font-size: 14px;
-        color: var(--text); 
-    }
-
-    .nav .search-container button:hover {
-        background: #ccc;
-    }
-
-    @media screen and (max-width: 600px) {
-        .nav .search-container {
-            float: none;
-        }
-        .nav input[type=text], .nav .search-container button {
-            float: none;
-            display: block;
-            text-align: left;
-            width: 100%;
-            margin: 0;
-            padding: 14px;
-        }
-        .nav input[type=text] {
-            border: 1px solid #ccc;  
-        }
-    }
-
-    /*SECTION FOR ALL PAGES*/
-    .section {
-        display: none;
-        padding: 2rem;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .section.active {
-        display: block;
-    }
-
-    .content {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr;
-        gap: 2rem;
-        margin-top: 1rem;
-    }
-
-    /*HOME PAGE - INTRODUCTION*/
-    .intro-container {
-        display: grid;
-        grid-template-columns: 2fr 1fr; /* Adjust ratio as needed */
-        gap: 20px;
-        align-items: stretch;
-    }
-
-    /*HOME PAGE - INTRODUCTION - TEXT*/
-    .intro {
-        text-align: center;
-        margin: 0;
-        padding: 15px;  /* Reduced padding */
-        background-color: #dde3f9;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-    }
-    .intro h2 {
-        text-align: left;
-        margin-bottom: 15px;
-        font-size: 1.3em;
-        color: #5986be;
-    }
-
-    .intro p {
-        text-align: justify;
-        font-size: 1.1em;
-        color: #555;
-        line-height: 1.3;  /* Further reduced */
-        margin: 0;
-    }
-
-    /*HOME PAGE - INTRODUCTION - PATRAS WEATHER OVERVIEW*/
-    .weather-overview {
-        background-color: #dde3f9;
-        padding: 15px;  /* Reduced padding */
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        margin: 0;
-    }
-
-    .weather-overview h2 {
-        margin-bottom: 10px;  /* Reduced margin */
-        font-size: 1.2em;
-    }
-
-    .weather-content {
-        display: flex;
-        align-items: center;
-        gap: 10px;  /* Further reduced */
-        margin-bottom: 8px;  /* Further reduced */
-    }
-
-    .weather-overview img {
-        width: 80px;
-        height: 80px;
-        object-fit: contain;
-    }
-
-    .weather-overview-data {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 2px; /* Reduced from 10px */
-    }
-
-    .weather-overview-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 2px 0;  /* Minimal padding */
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    .weather-overview-item:last-child {
-        border-bottom: none;
-    }
-
-    .weather-overview-item span:first-child {
-        color: #555;
-        font-weight: 500;
-    }
-
-    .weather-overview-item span:last-child {
-        color: #2c5282;
-        font-weight: 600;
-    }
-
-    @media (max-width: 768px) {
-        .intro-container {
-            grid-template-columns: 1fr;
-        }
-        
-        .intro, .weather-overview {
-            height: auto;
-        }
-    }
-
-    /*HOME PAGE - MAP*/
-    #map {
-        height: 600px;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        z-index: 0;
-    }
-
-    /*HOME PAGE - LOCATIONS LIST*/
-    .locations {
-        background: var(--card);
-        padding: 1.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        max-height: 600px;
-        overflow-y: auto;
-
-        scrollbar-width: thin;
-        scrollbar-color: #A9A9A9;
-    }
-
-    /*HOME PAGE - SCROLLBAR*/
-    .locations::-webkit-scrollbar {
-        width: 10px;
-    }
-
-    .locations::-webkit-scrollbar-thumb {
-        background-color: var(--secondary);
-        border-radius: 10px;
-        border: 2px solid var(--background);
-    }
-
-    .locations::-webkit-scrollbar-track {
-        background: var(--background);
-        border-radius: 10px;
-    }
-
-    /*HOME PAGE - MAP LOCATIONS*/
-    .location-item {
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        background: var(--background);
-        border-radius: 0.75rem;
-        transition: transform 0.2s, background-color 0.2s;
-    }
-
-    .location-item:hover {
-        transform: translateX(0.25rem);
-    }
-
-    .marker-popup {
-        padding: 0.1rem;
-    }
-
-    .marker-popup h3 {
-        color:  var(--text);
-        margin-bottom: 0.1rem;
-        font-size: 0.7rem;
-        font-weight: 400;
-    }
-
-    /*HOME PAGE - LOCATION INFO*/
-    .location-info h3 {
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-
-    .location-info p {
-        color: #718096;
-        font-size: 0.875rem;
-    }
-
-    #location-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-    }
-
-    /*POINTS INFO PAGE*/
-    .loc-info label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    /*POINTS INFO PAGE - REFRESH DATA BUTTON*/
-    .refresh-button {
-        background:#2c5282;
-        color: white; 
-        float: right;    
-        margin-right: 150px;                       
-        padding: 0.5rem 1rem; 
-        border: none; 
-        border-radius: 8px; 
-        cursor: pointer; 
-        font-size: 1rem;
-    }
-
-    .refresh-button:hover {
-        background: #5986be;
-        color: var(--border);
-    }
-
-    /*POINTS INFO PAGE - LOCATION SELECT*/
-    .infodropdown {
-        position: relative;
-        display: inline-block;
-        line-height: 50px;
-    }
-
-    .infodropdown button {
-        background: #5986be;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 2px;
-        cursor: pointer;
-        width: 100%;
-        min-width: 260px;
-        font-size: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .infodropdown button::after {
-        content: '';
-        border-bottom: 2px solid #ffffff;
-        border-right: 2px solid #ffffff;
-        position: absolute;
-        top: 50%;
-        right: 30px;
-        width: 8px;
-        height: 8px;
-        transform: rotate(45deg) translateY(-50%);
-        transform-origin: right;
-    }
-
-    .infodropdown-content {
-        display: none;
-        position: absolute;
-        background-color: var(--card);
-        min-width: 520px;
-        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-        border-radius: 2px;
-        font-size: 1rem;
-        line-height: 40px;
-        font-size: 1rem;
-        column-count: 2;
-        column-rule: 1px solid var(--primary);
-    }
-
-    .infodropdown-content button {
-        background: transparent;
-        border: none;
-        color: var(--text);
-        padding: 10px;
-        text-align: left;
-        width: 100%;
-        cursor: pointer;
-        display: block;
-    }
-
-    .infodropdown-content button::after {
-        content: '';
-        font-size: 0.8rem;
-        margin-left: 1rem;
-    }
-
-    .infodropdown-content button:hover {
-        background: var(--background);
-        color: var(--primary);
-    }
-
-    .infodropdown:hover .infodropdown-content {
-        display: block;
-    }
-
-    /*POINTS INFO PAGE - WEATHER INFO*/
-    .weather-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);  /* Three columns in the first row */
-        gap: 1.5rem;
-    }
-
-    .weather-item {
-        padding: 1.25rem;
-        background: var(--background);
-        border-radius: 0.75rem;
-        text-align: center;
-    }
-
-    .weather-item h3 {
-        color: var(--text);
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .weather-item p {
-        color: var(--primary);
-        font-size: 1.5rem;
-        font-weight: 700;
-    }
-
-    /* To ensure any additional elements below the first 3 frames are properly stacked */
-    .weather-grid > .weather-item:nth-child(n+4) {
-        grid-column: span 1;  /* Rest of the items go into the next line */
-    }
-
-    /*POINTS INFO PAGE - TRAFFIC INFO*/
-    .traffic-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
-    }
-
-    .traffic-item {
-        padding: 1.25rem;
-        background: var(--background);
-        border-radius: 0.75rem;
-        text-align: center;
-    }
-
-    .traffic-item h3 {
-        color: var(--text);
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .traffic-item p {
-        color: var(--primary);
-        font-size: 1.5rem;
-        font-weight: 700;
-    }
-
-    .traffic-grid > .traffic-item:nth-child(n+4) {
-        grid-column: span 1;  
-    }
-
-    /*DIAGRAMS PAGE*/
-    .diagramsdropdown {
-        position: relative;
-        display: inline-block;
-        line-height: 50px;
-    }
-
-    .diagramsdropdown button {
-        background: #5986be;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 2px;
-        cursor: pointer;
-        width: 100%;
-        min-width: 260px;
-        font-size: 1rem;
-    }
-
-    .diagramsdropdown button::after {
-        content: '';
-        border-bottom: 2px solid #ffffff;
-        border-right: 2px solid #ffffff;
-        position: absolute;
-        top: 50%;
-        right: 30px;
-        width: 8px;
-        height: 8px;
-        transform: rotate(45deg) translateY(-50%);
-        transform-origin: right;
-    }
-
-    .diagramsdropdown-content {
-        display: none;
-        position: absolute;
-        background-color: var(--card);
-        min-width: 260px;
-        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-        border-radius: 2px;
-        font-size: 1rem;
-        line-height: 40px;
-        font-size: 1rem;
-    }
-
-    .diagramsdropdown-content button {
-        background: transparent;
-        border: none;
-        color: var(--text);
-        padding: 10px;
-        text-align: left;
-        width: 100%;
-        cursor: pointer;
-    }
-
-    .diagramsdropdown-content button::after {
-        content: '';
-        font-size: 0.8rem;
-        margin-left: 1rem;
-    }
-
-    .diagramsdropdown-content button:hover {
-        background: var(--background);
-        color: var(--primary);
-    }
-
-    .diagramsdropdown:hover .diagramsdropdown-content {
-        display: block;
-    }
-
-    .diagram-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        height: 400px;
-        margin-bottom: 30px;
-    }
-
-    .diagram-container h2{
-        text-align: left;
-        margin-bottom: 15px;
-        font-size: 1.3em;
-        color: var(--primary);
-    }
-
-    .diagram {
-        background: var(--card);
-        padding: 1.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        height: 400px;
-        margin-top: 10px;
-    }
-
-    .diagram h3 {
-        color: var(--primary);
-        margin-bottom: 1rem;
-        font-weight: 600;
-    }
-
-    .diagram iframe {
-        width: 100%;
-        height: 100%;
-    }
-
-    @media (max-width: 1024px) {
-        .content {
-            grid-template-columns: 1fr;
-        }
-        
-        .diagram-container {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .nav {
-            flex-wrap: wrap;
-        }
-        
-        .nav-button {
-            flex: 1 1 calc(50% - 1rem);
-        }
-    }
-
-    /*CONTACT US PAGE*/
-    #contact-us {
-        background: #f9f9f9;
-        padding: 2rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-
-    #contact-us h2 {
-        font-size: 2rem;
-        color: #2c3e50;
-        margin-bottom: 1rem;
-    }
-
-    #contact-us p {
-        font-size: 1.1rem;
-        color: #34495e;
-        margin-bottom: 2rem;
-    }
-
-    /*CONTACT US PAGE - TEAM SECTION*/
-    .team-container {
-        text-align: center;
-    }
-
-    .team-container h3 {
-        font-size: 1.8rem;
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-    }
-
-    .team-members {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        flex-wrap: wrap;
-    }
-
-    .team-member {
-        background: #ffffff;
-        padding: 1.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        width: 250px;
-    }
-
-    .team-member img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        margin-bottom: 1rem;
-    }
-
-    .team-member h4 {
-        font-size: 1.2rem;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-    }
-
-    .team-member p {
-        font-size: 1rem;
-        color: #7f8c8d;
-        margin-bottom: 1rem;
-    }
-
-    .team-member .contact-details p {
-        font-size: 0.9rem;
-        color: #34495e;
-        margin-bottom: 0.5rem;
-    }
-
-    .team-member .contact-details p strong {
-        color: #2c3e50;
-    }
-
-    .team-member .social-links a {
-        color: #3498db;
-        text-decoration: none;
-        font-size: 0.9rem;
-        margin: 0 0.5rem;
-    }
-
-    .team-member .social-links a:hover {
-        text-decoration: underline;
-    }
-
-    .infodropdown-content button.active {
-        /*background: var(--secondary);
-        color: white;*/
-        font-weight: bold;
-    }
-
-    /*FOOTER*/
-    footer {
-        flex-shrink: 0;
-        text-align: center;
-        margin-top: auto;
-        background-color: #dde3f9;
-        padding: 10px;
-        width: 100%;
-    }
-</style>
 <body>
     <div class="header">
         <h1>City Microclimate And Traffic Analysis</h1>
     </div>
-    <img src="logo.png" alt="Logo" class="logo">
+    <img src="images/logo.png" alt="Logo" class="logo">
+
     <nav class="nav">
         <button class="nav-button active" data-section="home">Home</button>
         <button class="nav-button" data-section="city-points">City Points Info</button>
@@ -772,7 +28,6 @@
                 <button type="submit"><i class="fa fa-search"></i></button>
             </form>
         </div>
-        
     </nav>
     
     <main>
@@ -913,7 +168,8 @@
         <!-- City Points Info Section -->
         <section id="city-points" class="section">
             <div class="loc-info">
-                <p>Select a location to view the weather and traffic information:</p>
+
+                <!--<p>Select a location to view the weather and traffic information:</p>-->
                 <div class="infodropdown">
                     <button>City Locations</button>
                     <div class="infodropdown-content"> 
@@ -934,50 +190,175 @@
                     </div>
                 </div>
                 <button class="refresh-button" >Refresh Data</button>
-            </div>
 
-            <h2>Current Weather Conditions</h2>
-            <div class="weather-grid">
-                <div class="weather-item">
-                    <h3>Temperature</h3>
-                    <p id="temperature">--</p>
+                <h2>Current Weather Conditions</h2>
+                <div class="weather-grid">
+                    <div class="weather-item">
+                        <h3>Temperature</h3>
+                        <p id="temperature">--</p>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Humidity</h3>
+                        <p id="humidity">--</p>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Wind Speed</h3>
+                        <p id="wind-speed">--</p>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Wind Direction</h3>
+                        <p id="wind-direction">--</p>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Rain</h3>
+                        <p id="rain">--</p>
+                    </div>
+                    <div class="weather-item">
+                        <h3>Pressure</h3>
+                        <p id="pressure">--</p>
+                    </div>
                 </div>
-                <div class="weather-item">
-                    <h3>Humidity</h3>
-                    <p id="humidity">--</p>
+        
+                <h2>Current Traffic Conditions</h2>
+                <div class="traffic-grid">
+                    <div class="traffic-item">
+                        <h3>Current Speed</h3>
+                        <p id="current-speed">--</p>
+                    </div>
+                    <div class="traffic-item">
+                        <h3>Free Flow Speed</h3>
+                        <p id="free-flow-speed">--</p>
+                    </div>
+                    <div class="traffic-item">
+                        <h3>Traffic Percentage</h3>
+                        <p id="traffic-percentage">--</p>
+                    </div>
                 </div>
-                <div class="weather-item">
-                    <h3>Wind Speed</h3>
-                    <p id="wind-speed">--</p>
+
+                <h2>Localized Microclimate Forecast</h2>
+                <div class="forecastdropdowncontainer">
+                    <div class="forecastdropdown">
+                        <button>Date</button>
+                        <div class="forecastdropdown-content" id="dateContent"></div>
+                    </div>
                 </div>
-                <div class="weather-item">
-                    <h3>Wind Direction</h3>
-                    <p id="wind-direction">--</p>
+
+                <div class="forecast-container">
+                    <div class="forecast">
+                        <h3>08:00:00</h3>
+                        <div class="forecast-description-container">
+                            <img id="forecast-weather-icon-09" src="weather icons/default weather.png" alt="Weather Icon">
+                            <p id="forecast-description-09"></p>
+                        </div>
+                        <div class="forecast-weather-grid">
+                            <div class="forecast-weather-item">
+                                <h3>Temperature</h3>
+                                <p id="forecast-temperature-09">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Humidity</h3>
+                                <p id="forecast-humidity-09">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Wind Speed</h3>
+                                <p id="forecast-wind-speed-09">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Wind Direction</h3>
+                                <p id="forecast-wind-direction-09">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Rain</h3>
+                                <p id="forecast-rain-09">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Pressure</h3>
+                                <p id="forecast-pressure-09">--</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="forecast">
+                        <h3>17:00:00</h3>
+                        <div class="forecast-description-container">
+                            <img id="forecast-weather-icon-15" src="weather icons/default weather.png" alt="Weather Icon">
+                            <p id="forecast-description-15"></p>
+                        </div>
+                        <div class="forecast-weather-grid">
+                            <div class="forecast-weather-item">
+                                <h3>Temperature</h3>
+                                <p id="forecast-temperature-15">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Humidity</h3>
+                                <p id="forecast-humidity-15">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Wind Speed</h3>
+                                <p id="forecast-wind-speed-15">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Wind Direction</h3>
+                                <p id="forecast-wind-direction-15">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Rain</h3>
+                                <p id="forecast-rain-15">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Pressure</h3>
+                                <p id="forecast-pressure-15">--</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="forecast">
+                        <h3>21:00:00</h3>
+                        <div class="forecast-description-container">
+                            <img id="forecast-weather-icon-21" src="weather icons/default weather.png" alt="Weather Icon">
+                            <p id="forecast-description-21"></p>
+                        </div>
+                        <div class="forecast-weather-grid">
+                            <div class="forecast-weather-item">
+                                <h3>Temperature</h3>
+                                <p id="forecast-temperature-21">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Humidity</h3>
+                                <p id="forecast-humidity-21">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Wind Speed</h3>
+                                <p id="forecast-wind-speed-21">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Wind Direction</h3>
+                                <p id="forecast-wind-direction-21">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Rain</h3>
+                                <p id="forecast-rain-21">--</p>
+                            </div>
+                            <div class="forecast-weather-item">
+                                <h3>Pressure</h3>
+                                <p id="forecast-pressure-21">--</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="weather-item">
-                    <h3>Rain</h3>
-                    <p id="rain">--</p>
+                
+                <h2>Localized Traffic Forecast for the next 24 hours</h2>
+                <div class="traffic-forecast-container">
+                    <div class="daily-traffic-forecast">
+                        <iframe src="https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=15&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                    </div>
                 </div>
-                <div class="weather-item">
-                    <h3>Pressure</h3>
-                    <p id="pressure">--</p>
+
+                <h2>Localized Traffic Forecast for the next 3 days</h2>
+                <div class="traffic-forecast-container">
+                    <div class="traffic-forecast">
+                        <iframe src="https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=15&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                    </div>
                 </div>
-            </div>
-    
-            <h2>Current Traffic Conditions</h2>
-            <div class="traffic-grid">
-                <div class="traffic-item">
-                    <h3>Current Speed</h3>
-                    <p id="current-speed">--</p>
-                </div>
-                <div class="traffic-item">
-                    <h3>Free Flow Speed</h3>
-                    <p id="free-flow-speed">--</p>
-                </div>
-                <div class="traffic-item">
-                    <h3>Traffic Percentage</h3>
-                    <p id="traffic-percentage">--</p>
-                </div>
+
             </div>
         </section>
 
@@ -985,19 +366,30 @@
         <section id="diagrams" class="section">
 
             <h2>Traffic & Weather Correlation</h2>
-            <div class="diagram-container">
-                <div class="diagram">
-                    <div class="diagramsdropdown">
-                        <button>City Locations</button>
-                        <div class="diagramsdropdown-content">
-                            <button data-location="Rio-Antirrio Bridge">Rio-Antirrio Bridge</button>
-                            <button data-location="University Crossroad">University Crossroad</button>
-                            <button data-location="Agyias Beach">Agyias Beach</button>
-                            <button data-location="National Road Interchange">National Road Interchange</button>
-                            <button data-location="Dasyllio">Dasyllio</button>
-                            <button data-location="Patras Centre">Patras Centre</button>
-                            <button data-location="South Park">South Park</button>
-                        </div>
+            <div class="diagram">
+                <div class="diagramsdropdown">
+                    <button>City Locations</button>
+                    <div class="diagramsdropdown-content">
+                        <button data-location="Rio-Antirrio Bridge">Rio-Antirrio Bridge</button>
+                        <button data-location="University Crossroad">University Crossroad</button>
+                        <button data-location="Agyias Beach">Agyias Beach</button>
+                        <button data-location="National Road Interchange">National Road Interchange</button>
+                        <button data-location="Dasyllio">Dasyllio</button>
+                        <button data-location="Patras Centre">Patras Centre</button>
+                        <button data-location="South Park">South Park</button>
+                    </div>
+                </div>
+                <div id="diagram-container-correlation">
+                    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                        <img src="correlation_diagrams/Default/diagram_today.png" 
+                             alt="Default Today Correlation Diagram" 
+                             style="width: 30%; border: 2px solid #ccc; border-radius: 5px;">
+                        <img src="correlation_diagrams/Default/diagram_yesterday.png" 
+                             alt="Default Yesterday Correlation Diagram" 
+                             style="width: 30%; border: 2px solid #ccc; border-radius: 5px;">
+                        <img src="correlation_diagrams/Default/diagram_two_days_ago.png" 
+                             alt="Default Two Days Ago Correlation Diagram" 
+                             style="width: 30%; border: 2px solid #ccc; border-radius: 5px;">
                     </div>
                 </div>
             </div>
@@ -1005,26 +397,151 @@
             <h2>Weather Conditions Comparison</h2>
             <div class="diagram-container">
                 <div class="diagram">
-                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/ae86wq8xjs8aoe/weather-conditions-comparison?timezone=browser&orgId=2&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/ae86wq8xjs8aoe/weather-conditions-comparison?from=now-20h&to=now&timezone=browser&orgId=2&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
                 </div>
                 <div class="diagram">
-                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/ae86wq8xjs8aoe/weather-conditions-comparison?timezone=browser&orgId=2&theme=light&panelId=2&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/ae86wq8xjs8aoe/weather-conditions-comparison?from=now-20h&to=now&timezone=browser&orgId=2&theme=light&panelId=2&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
                 </div>
             </div>
 
             <h2>Historical Insights</h2>
             <div class="diagram-container">
                 <div class="diagram">
+                    <img src="correlation_diagrams/rainy_vs_sunny_diagram_dasyllio_0.65.png"
+                    style="width: 97%; height: 90%; border: 2px solid #ccc; border-radius: 5px;">
+                    <p>Correlation Index = 0.65</p>
+                </div>
+                <div class="diagram">
+                    <img src="correlation_diagrams/windy_vs_no_windy_diagram_notio_parko_0.18.png"
+                    style="width: 97%; height: 90%; border: 2px solid #ccc; border-radius: 5px;">
+                    <p>Correlation Index = 0.18</p>
                 </div>
             </div>
         </section>
 
         <!-- Alerts-Problems Section -->
         <section id="alerts" class="section">
-            <div class="loc-info">
-                <h2>Current Alerts</h2>
-                <p>No active alerts at this time.</p>
+
+            <h2>Wind Speed</h2>
+            <div class="alert-container">
+                <div class="alert">
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/eec64477j1blse/weather-conditions-thresholds?from=now-11d&to=now&timezone=browser&orgId=2&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                </div>
+                <div class="alert">
+                    <div class="text">
+                        <p>Strong winds on the Rio-Antirrio Bridge pose a significant risk to both vehicles and micromobility users, 
+                            such as cyclists and electric scooters. This alert not only informs users about dangerous wind conditions 
+                            but also helps prevent potential accidents caused by vehicle instability or difficulty controlling micromobility 
+                            devices. By staying alert to these conditions, we can reduce the chances of traffic disruptions and ensure safer 
+                            travel for all bridge users, whether on the road or using alternative mobility options.</p>
+                    </div>
+                    <h2>Current Alerts</h2>
+                    <div id="wind-alert"></div>
+                </div>
             </div>
+
+            <h2>Temperature</h2>
+            <div class="alert-container">
+                <div class="alert">
+                    <div class="text">
+                        <p>Extreme heat can seriously affect road conditions, vehicle performance, and personal safety. 
+                            High temperatures can lead to tire blowouts, engine malfunctions, and even road surface damage, 
+                            posing risks to drivers, cyclists, and pedestrians alike. This alert serves to warn users about the 
+                            dangers of traveling in such conditions, allowing them to make safer choices—whether it's delaying trips, 
+                            staying hydrated, or using safer, cooler routes. By raising awareness of extreme temperatures, 
+                            we protect the well-being of everyone on the road and in transit.</p>
+                    </div>
+                    <h2>Current Alerts</h2>
+                    <div id="temperature-alert"></div>
+                </div>
+                <div class="alert">
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/eec64477j1blse/weather-conditions-thresholds?from=now-11d&to=now&timezone=browser&orgId=2&theme=light&panelId=2&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <h2>Rain Amount</h2>
+            <div class="alert-container">
+                <div class="alert">
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/eec64477j1blse/weather-conditions-thresholds?from=now-11d&to=now&timezone=browser&showCategory=Override%202&orgId=2&theme=light&panelId=4&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                </div>
+                <div class="alert">
+                    <div class="text">
+                        <p>When rainfall exceeds 3.5mm at the National Road Interchange, road conditions deteriorate rapidly, increasing 
+                            the risk of skidding and reduced visibility—especially at the sharp and dangerous turn in this area. Wet pavement 
+                            can make braking less effective, while pooled water can lead to aquaplaning, making it crucial for drivers to 
+                            slow down and remain vigilant. This alert serves as an early warning, urging extra caution to prevent accidents 
+                            in this high-risk zone.</p>
+                    </div>
+                    <h2>Current Alerts</h2>
+                    <div id="rain-alert-ethnikh"></div>
+                </div>
+            </div>
+            <div class="alert-container">
+                <div class="alert">
+                    <div class="text">
+                        <p>Excessive rainfall near Agyias Beach significantly increases the risk of flooding, making both the roadway 
+                            and the adjacent bicycle path hazardous for vehicles, cyclists, and pedestrians. Water accumulation can reduce 
+                            traction, cause hydroplaning, and create unpredictable conditions for micromobility users. This alert helps 
+                            travelers stay informed and take necessary precautions, ensuring safer movement in this flood-prone coastal area, 
+                            especially during heavy downpours.</p>
+                    </div>
+                    <h2>Current Alerts</h2>
+                    <div id="rain-alert-plaz"></div>
+                </div>
+                <div class="alert">
+                    <iframe src="https://labserver.sense-campus.gr:8087/d-solo/eec64477j1blse/weather-conditions-thresholds?from=now-11d&to=now&timezone=browser&showCategory=Override%202&orgId=2&theme=light&panelId=3&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <h2>Add Alert</h2>
+            <div class="add-alert-container">
+                <button class="plus-button" id="plusButton">+</button>
+                <div id="alertMessage" class="alert-message"></div>
+                <!--<button class="plus-button" id="plusButton">
+                    <span>+</span>
+                </button>
+
+                <div class="button-message-container">
+                    <button class="plus-button" id="plusButton">+</button>
+                    <div id="alertMessage" class="alert-message"></div>
+                </div>-->
+        
+                <div class="form-container" id="formContainer">
+                    <select id="locationSelect" required>
+                        <option value="" disabled selected hidden>Select Location</option>
+                        <option value="University Crossroad">University Crossroad</option>
+                        <option value="Agyias Beach">Agyias Beach</option>
+                        <option value="National Road Interchange">National Road Interchange</option>
+                        <option value="Patras Centre">Patras Centre</option>
+                        <option value="Gounarh Road">Gounarh Road</option>
+                        <option value="South Park">South Park</option>
+                        <option value="Dasyllio">Dasyllio</option>
+                        <option value="Rio-Antirrio Bridge">Rio-Antirrio Bridge</option>
+                        <option value="Leuka">Leuka</option>
+                        <option value="Paralia">Paralia</option>
+                        <option value="Kato Sychaina">Kato Sychaina</option>
+                        <option value="Demenika">Demenika</option>
+                        <option value="Kastelokampos">Kastelokampos</option>
+                        <option value="University of Patras">University of Patras</option>
+                    </select>
+        
+                    <select id="metricSelect" required>
+                        <option value="" disabled selected hidden>Select Metric</option>
+                        <option value="Temperature">Temperature (°C)</option>
+                        <option value="Humidity">Humidity (%)</option>
+                        <option value="Wind Speed">Wind Speed (m/sec)</option>
+                        <option value="Wind Direction">Wind Direction (°)</option>
+                        <option value="Rain">Rain (mm)</option>
+                        <option value="Pressure">Pressure (hPa)</option>
+                        <option value="Traffic Percentage">Traffic Percentage (%)</option>
+                    </select>
+        
+                    <input type="number" id="thresholdInput" placeholder="Enter threshold">
+        
+                    <button class="submit-alert-button" id="submitAlertButton">Add Alert</button>
+                </div>
+            </div>
+
         </section>
 
         <!-- Contact Us Section -->
@@ -1036,9 +553,9 @@
                 <p>We'd love to hear from you! Reach out to any of our team members below:</p>
                 <div class="team-members">
                     <div class="team-member">
-                        <img src="team_member_1.jpg" alt="Team Member 1">
+                        <img src="images/team_member_1.jpg" alt="Team Member 1">
                         <h4>Ariadne Fyrogeni</h4>
-                        <p>Lead Developer</p>
+                        <p>ECE Student</p>
                         <div class="contact-details">
                             <p><strong>Email:</strong> up1083816@ac.upatras.gr</p>
                             <p><strong>Phone:</strong> +306940505767</p>
@@ -1049,9 +566,9 @@
                         </div>
                     </div>
                     <div class="team-member">
-                        <img src="team_member_2.jpg" alt="Team Member 2">
+                        <img src="images/team_member_2.png" alt="Team Member 2">
                         <h4>Georgia Psychogiou</h4>
-                        <p>Data Analyst</p>
+                        <p>ECE Student</p>
                         <div class="contact-details">
                             <p><strong>Email:</strong> up1083979@ac.upatras.gr</p>
                             <p><strong>Phone:</strong> +306988097895</p>
@@ -1066,384 +583,12 @@
         </section>
     </main>
 
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2024 City Microclimate and Traffic Analysis</p>
+        <p>&copy; 2025 City Microclimate and Traffic Analysis</p>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <script>
-        window.onload = function() {
-            window.scrollTo({
-                top: 0,
-                left: 0,
-                behavior: 'smooth'
-            });
-        };
-
-        // Weather icon mapping
-        const weatherIcons = {
-            'clear sky': 'weather icons/clear sky.png',
-            'few clouds': 'weather icons/few clouds.png',
-            'scattered clouds': 'weather icons/scattered clouds.png',
-            'broken clouds': 'weather icons/broken clouds.png',
-            'overcast clouds': 'weather icons/broken clouds.png',
-            'shower rain': 'weather icons/shower rain.png',
-            'light rain': 'weather icons/shower rain.png',
-            'moderate rain': 'weather icons/shower rain.png',
-            'heavy intensity rain': 'weather icons/shower rain.png',
-            'very heavy rain': 'weather icons/shower rain.png',
-            'extreme rain': 'weather icons/shower rain.png',
-            'rain': 'weather icons/rain.png',
-            'drizzle': 'weather icons/rain.png',
-            'drizzle rain': 'weather icons/rain.png',
-            'thunderstorm': 'weather icons/thunderstorm.png',
-            'thunderstorm with light rain': 'weather icons/thunderstorm.png',
-            'thunderstorm with rain': 'weather icons/thunderstorm.png',
-            'thunderstorm with heavy rain': 'weather icons/thunderstorm.png',
-            'thunderstorm with drizzle': 'weather icons/thunderstorm.png',
-            'light thunderstorm': 'weather icons/thunderstorm.png',
-            'heavy thunderstorm': 'weather icons/thunderstorm.png',
-            'snow': 'weather icons/snow.png',
-            'light snow': 'weather icons/snow.png',
-            'light rain and snow': 'weather icons/snow.png',
-            'mist': 'weather icons/mist.png', 
-            'haze': 'weather icons/mist.png', 
-            'fog': 'weather icons/mist.png', 
-            'dust': 'weather icons/mist.png',            
-        };
-
-        // Function to update city weather overview
-        function updateCityWeather(data) {
-            if (!data || !data.Patras || !data.Patras.weather) return;
-
-            const cityWeather = data.Patras.weather || {};;
-            
-            // Update weather icon
-            const weatherIcon = document.getElementById('weather-icon');
-            const description = cityWeather.Description?.toLowerCase() || 'clear sky';
-            weatherIcon.src = weatherIcons[description] || 'default weather.png';
-
-
-            // Helper function to handle display values with units
-            const displayValue = (value, unit) => {
-                if (value !== undefined && value !== null && value !== '') {
-                    return value + unit;
-                }
-                return '--';
-            };
-            
-            // Update weather data
-            document.getElementById('city-description').textContent = cityWeather.Description || '--';
-            document.getElementById('city-temperature').textContent = displayValue(cityWeather.Temperature, '°C');
-            document.getElementById('city-humidity').textContent = displayValue(cityWeather.Humidity, '%');
-            document.getElementById('city-wind-speed').textContent = displayValue(cityWeather['Wind Speed'], ' km/h');
-            document.getElementById('city-rain').textContent = displayValue(cityWeather.Rain, ' mm');
-        }
-
-        function fetchGeneralCityWeather() {
-            fetch('http://192.168.1.6:8080/api/city-data')
-                .then(response => response.json())
-                .then(data => {
-                    updateCityWeather(data);
-                })
-                .catch(error => console.error('Error fetching city data:', error));
-        }
-
-        // Call this when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchGeneralCityWeather();
-        });
-        
-        const map = L.map('map').setView([38.273530, 21.730154], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        const locations = [
-            { name: 'Rio-Antirrio Bridge', coords: [38.320745, 21.773224], color: '#6d6a82' },
-            { name: 'University Crossroad', coords: [38.290672, 21.780164], color: '#7091e6' },
-            { name: 'University of Patras', coords: [38.286860,21.787316], color: '#27489c' },
-            { name: 'Kastelokampos', coords: [38.2893, 21.7739], color: '#566487' },
-            { name: 'Agyias Beach', coords: [38.277013, 21.745342], color: '#3d52a0' },
-            { name: 'Kato Sychaina', coords: [38.2652,21.757], color: '#303a5c' },
-            { name: 'National Road Interchange', coords: [38.262128, 21.750417], color: '#47a3c2' },
-            { name: 'Dasyllio', coords: [38.248858, 21.745578], color: '#515660' },
-            { name: 'Patras Centre', coords: [38.246877, 21.735854], color: '#5c52a0' },
-            { name: 'Gounarh Road', coords: [38.245566, 21.730981], color: '#7687b7' },
-            { name: 'South Park', coords: [38.237902, 21.725841], color: '#5a87a0' },
-            { name: 'Leuka', coords: [38.2066,21.7271], color: '#805fa5' },
-            { name: 'Demenika', coords: [38.2001,21.7438], color: '#566ba4' },
-            { name: 'Paralia', coords: [38.1994,21.6992], color: '#2c6182' }
-        ];
-
-        const locationWeatherInfo = document.getElementById('loc-info');
-        const locationTrafficInfo = document.getElementById('loc-info');
-
-        // Get the user's geolocation
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition, handleError, {
-                    enableHighAccuracy: true,
-                    timeout: 5000,
-                    maximumAge: 0
-                });
-            } else {
-                console.log("Geolocation is not supported by this browser.");
-            }
-        }
-
-        function showPosition(position) {
-            const userLat = position.coords.latitude;
-            const userLon = position.coords.longitude;
-
-            // Move the map to the user's location
-            map.setView([userLat, userLon], 13);
-
-            // Add a marker for the user's location
-            L.marker([userLat, userLon])
-                .addTo(map)
-                .bindPopup("You are here!")
-                .openPopup();
-
-            
-            // Clear weather and traffic info
-            document.getElementById('temperature').textContent = "--";
-            document.getElementById('humidity').textContent = "--";
-            document.getElementById('wind-speed').textContent = "--";
-            document.getElementById('wind-direction').textContent = "--";
-            document.getElementById('rain').textContent = "--";
-            document.getElementById('pressure').textContent = "--";
-            
-            document.getElementById('current-speed').textContent = "--";
-            document.getElementById('free-flow-speed').textContent = "--";
-            document.getElementById('traffic-percentage').textContent = "--";
-        }
-        
-        // Call getLocation on page load
-        getLocation();
-
-        // Set up the section navigation
-        document.querySelectorAll('.nav-button').forEach(button => {
-            button.addEventListener('click', () => {
-                switchSection(button.dataset.section);
-            });
-        });
-
-        // Switch the section navigation
-        function switchSection(sectionId) {
-            document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            
-            const button = document.querySelector(`[data-section="${sectionId}"]`);
-            if (button) button.classList.add('active');
-            
-            const section = document.getElementById(sectionId);
-            if (section) section.classList.add('active');
-        }
-
-        // Function to show City Points section
-        function showCityPointsSection() {
-            document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            
-            const cityPointsButton = document.querySelector('[data-section="city-points"]');
-            cityPointsButton.classList.add('active');
-            document.getElementById('city-points').classList.add('active');
-        }
-
-        // Update weather and traffic location info when a location point is clicked
-        document.querySelectorAll('.location-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const locationName = item.getAttribute('data-location');
-                if (locationName) {
-                    switchSection('city-points');
-                    updateWeatherLocationInfo(locationName);
-                    updateTrafficLocationInfo(locationName);
-                }
-            });
-        });
-
-        // Custom marker icon definition
-        const createCustomMarker = (color) => {
-            return L.divIcon({
-                html: `<svg width="14" height="26" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 8.4 12 20 12 20s12-11.6 12-20c0-6.63-5.37-12-12-12zm0 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" 
-                    fill="${color}"/>
-                </svg>`,
-                className: 'custom-marker',
-                iconSize: [14, 26],
-                iconAnchor: [7, 26],
-                popupAnchor: [0, -32]
-            });
-        };
-
-        // Update weather and traffic location info when a marker in map is clicked
-        locations.forEach(loc => {
-            const marker = L.marker(loc.coords, {
-                icon: createCustomMarker(loc.color)
-            })
-            .bindPopup(`
-                <div class="marker-popup">
-                    <h3>${loc.name}</h3>
-                </div>
-            `)
-            .addTo(map)
-            .on('click', () => {
-                switchSection('city-points');
-                updateWeatherLocationInfo(loc.name);
-                updateTrafficLocationInfo(loc.name);
-            });
-
-            // Open popup on hover
-            marker.on('mouseover', function (e) {
-                this.openPopup();
-            });
-
-            // Close popup when mouse leaves
-            marker.on('mouseout', function (e) {
-                this.closePopup();
-            });
-        });
-
-        // Update weather and traffic location info when infodropdown selection changes
-        document.querySelectorAll('.infodropdown-content button').forEach(button => {
-            button.addEventListener('click', () => {
-                const locationName = button.dataset.location;
-                if (locationName) {
-                    updateWeatherLocationInfo(locationName);
-                    updateTrafficLocationInfo(locationName);
-                    updateinfodropdownButton(locationName);
-                }
-            });
-        });
-
-        const infodropdownButton = document.querySelector('.infodropdown button');
-
-        // Function to update the infodropdown button text
-        function updateinfodropdownButton(locationName) {
-            if (infodropdownButton) {
-                infodropdownButton.textContent = locationName;
-            }
-            document.querySelectorAll('.infodropdown-content button').forEach(button => {
-                button.classList.remove('active');
-                if (button.dataset.location === locationName) {
-                    button.classList.add('active');
-                }
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', fetchCityData);
-        document.querySelector('.refresh-button').addEventListener('click', fetchCityData);
-
-        let currentSelectedLocation = '';
-
-        function fetchCityData() {
-            /*fetch('http://192.168.1.6:8080/api/city-data') georgia*/
-            /*fetch('http://192.168.1.144:8080/api/city-data') giorgos*/
-            /*fetch('http://192.168.1.6:8080/api/city-data')*/
-            fetch('http://192.168.1.6:8080/api/city-data') /*atout*/
-                .then(response => response.json())
-                .then(data => {
-                    if (currentSelectedLocation) {
-                        updateFrontend(data, currentSelectedLocation);
-                    }
-                })
-                .catch(error => console.error('Error fetching city data:', error));
-        }
-
-        // Update weather and traffic info
-        function updateFrontend(data, location) {
-            const locationData = data[location];
-            if (!locationData) return;
-
-            const weather = locationData.weather || {};
-            const traffic = locationData.traffic || {};
-
-            // Helper function to handle display values with units
-            const displayValue = (value, unit) => {
-                if (value !== undefined && value !== null && value !== '') {
-                    return value + unit;
-                }
-                return '--';
-            };
-
-            // Weather information
-            document.getElementById('temperature').textContent = displayValue(weather.Temperature, '°C');
-            document.getElementById('humidity').textContent = displayValue(weather.Humidity, '%');
-            document.getElementById('wind-speed').textContent = displayValue(weather['Wind Speed'], ' km/h');
-            document.getElementById('wind-direction').textContent = displayValue(weather['Wind Direction'], '°');
-            document.getElementById('rain').textContent = displayValue(weather.Rain, ' mm');
-            document.getElementById('pressure').textContent = displayValue(weather.Pressure, ' hPa');
-
-            // Traffic information
-            document.getElementById('current-speed').textContent = displayValue(traffic['Current Speed'], ' km/h');
-            document.getElementById('free-flow-speed').textContent = displayValue(traffic['Free Flow Speed'], ' km/h');
-            document.getElementById('traffic-percentage').textContent = displayValue(((traffic['Traffic Percentage'])*100).toFixed(0), '%');
-        }
-
-        // Update weather info when location changes
-        function updateWeatherLocationInfo(location) {
-            currentSelectedLocation = location;
-            updateinfodropdownButton(location);
-            fetchCityData(); // Fetch fresh data when location changes
-        }
-
-        // Update traffic info when location changes
-        function updateTrafficLocationInfo(location) {
-        }
-
-        // Add periodic data refresh (optional)
-        setInterval(fetchCityData, 30000);
-
-        // Reference the search input and form
-        const searchInput = document.querySelector('.search-container input[type="text"]');
-        const searchForm = document.querySelector('.search-container form');
-
-        // Event listener for the search form submission
-        searchForm.addEventListener('submit', (event) => {
-            event.preventDefault(); // Prevent the default form submission
-
-            const searchTerm = searchInput.value.trim().toLowerCase();
-            if (!searchTerm) return alert('Please enter a location name.');
-
-            // Find the matching location
-            const location = locations.find(loc => loc.name.toLowerCase().includes(searchTerm));
-            if (!location) return alert('Location not found. Please try again.');
-
-            // Navigate to the "City Points Info" section
-            switchSection('city-points');
-
-            // Update weather and traffic information
-            updateWeatherLocationInfo(location.name);
-            updateTrafficLocationInfo(location.name);
-
-            // Highlight the matching location in the infodropdown (optional)
-            document.querySelectorAll('.infodropdown-content button').forEach(button => {
-                button.classList.remove('active');
-                if (button.dataset.location === location.name) {
-                    button.classList.add('active');
-                }
-            });
-        });
-
-        function handleError(error) {
-            let errorMessage = "";
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    errorMessage = "Please enable location services to use this feature.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    errorMessage = "Location information is currently unavailable.";
-                    break;
-                case error.TIMEOUT:
-                    errorMessage = "Location request timed out. Please try again.";
-                    break;
-                default:
-                    errorMessage = "An unknown error occurred while getting location.";
-                    break;
-            }
-            console.log(errorMessage);
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>

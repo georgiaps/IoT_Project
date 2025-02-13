@@ -61,10 +61,12 @@ with client.write_api(write_options=WriteOptions(batch_size=500)) as write_api:
                 new_time = record.get_time() + timedelta(days=7)
                 if latest_time and new_time <= latest_time:
                     continue  # Skip duplicates
-                
+
+                traffic_percentage = record.get_value() * 100
+
                 point = Point(forecast_measurement)
                 point.time(new_time, WritePrecision.NS)
-                point.field("traffic_percentage", record.get_value())
+                point.field("traffic_percentage", traffic_percentage)
                 points.append(point)
         
         if points:

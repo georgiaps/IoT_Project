@@ -1,0 +1,9 @@
+pandas
+numpy
+matplotlib
+flask
+flask-cors
+influxdb_client
+requests
+scipy
+paho-mqtt

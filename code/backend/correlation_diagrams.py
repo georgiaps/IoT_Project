@@ -43,7 +43,7 @@ def query_influxdb(client, bucket, point, measurement_type, field, start, stop):
             
 
 def plot_daily_diagrams(client, bucket, point, point_code, weather_field, weather_unit, date): 
-    point_folder = os.path.join("code/frontend/correlation_diagrams", point)
+    point_folder = os.path.join("code/backend/static/correlation_diagrams", point)
     os.makedirs(point_folder, exist_ok=True)
     
     for day_offset in range(3):

@@ -9,11 +9,12 @@ org = "students"
 token = "sJcp3CYIFhde06U1V9LMu1Qcsl0KVo4die707OYtsM9XNzTg-w5-tUlbwtzQtm3rS30xIL5N9jT92h6K05cpiw=="
 
 # The measurement to delete
-measurement_name = "TrafficAPIData_gefura_rio_antirrio"  # Replace with your actual measurement name
+measurement_name = "Forecast_TrafficAPIData_university_patras"  # Replace with your actual measurement name
 
 # Time range for deletion (adjust as needed)
 start_time = "1970-01-01T00:00:00Z"  # Start of time range
-end_time = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace("+00:00", "Z")  # Proper RFC3339Nano format
+#end_time = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace("+00:00", "Z")  # Proper RFC3339Nano format
+end_time = "2025-02-20T00:00:00Z"
 
 try:
     # Initialize the InfluxDB client

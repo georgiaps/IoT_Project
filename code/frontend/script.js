@@ -7,6 +7,8 @@ window.onload = function() {
     });
 };
 
+const backend_ip = 'http://172.20.10.6:8080/api/city-data'
+
 // Weather icon mapping day
 const weatherIconsDay = {
     'clear sky': 'weather icons/clear sky day.png',
@@ -103,6 +105,23 @@ const traffic_forecast_mapping = {
     "Demenika": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=2&__feature.dashboardSceneSolo",
     "Kastelokampos": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=8&__feature.dashboardSceneSolo",
     "University of Patras": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B3d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=14&__feature.dashboardSceneSolo"
+}
+
+const daily_traffic_forecast_mapping = {
+    "University Crossroad": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=4&__feature.dashboardSceneSolo",
+    "Agyias Beach": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=13&__feature.dashboardSceneSolo",
+    "National Road Interchange": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=3&__feature.dashboardSceneSolo",
+    "Patras Centre": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=5&__feature.dashboardSceneSolo",
+    "Gounarh Road": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=7&__feature.dashboardSceneSolo",
+    "South Park": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=11&__feature.dashboardSceneSolo",
+    "Dasyllio": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Legend&orgId=2&theme=light&panelId=1&__feature.dashboardSceneSolo",
+    "Rio-Antirrio Bridge": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=6&__feature.dashboardSceneSolo",
+    "Leuka": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=10&__feature.dashboardSceneSolo",
+    "Paralia": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=12&__feature.dashboardSceneSolo",
+    "Kato Sychaina": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=9&__feature.dashboardSceneSolo",
+    "Demenika": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=2&__feature.dashboardSceneSolo",
+    "Kastelokampos": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=8&__feature.dashboardSceneSolo",
+    "University of Patras": "https://labserver.sense-campus.gr:8087/d-solo/bec9f4rsi9n9cf/traffic-forecasts?from=now&to=now%2B1d&timezone=browser&showCategory=Panel%20options&orgId=2&theme=light&panelId=14&__feature.dashboardSceneSolo"
 }
 
 //NAVIGATION 
@@ -202,7 +221,7 @@ function updateRainAlertPlaz(data) {
 
 // Fetch weather data for city weather overview (url change needed)
 function fetchGeneralCityWeather() {
-    fetch('http://172.20.10.6:8080/api/city-data')
+    fetch(backend_ip)
         .then(response => response.json())
         .then(data => {
             updateCityWeather(data);
@@ -309,8 +328,9 @@ document.querySelectorAll('.location-item').forEach(item => {
             updateWeatherLocationInfo(locationName);
             updateTrafficLocationInfo(locationName);
             updateTrafficForecastIframe(locationName);
+            updateDailyTrafficForecastIframe(locationName);
             if (selectedDate) {
-                fetch('http://172.20.10.6:8080/api/city-data')
+                fetch(backend_ip)
                     .then(response => response.json())
                     .then(data => {
                         updateForecastData(data, selectedLocation, selectedDate);
@@ -338,8 +358,9 @@ locations.forEach(loc => {
         updateWeatherLocationInfo(loc.name);
         updateTrafficLocationInfo(loc.name);
         updateTrafficForecastIframe(loc.name);
+        updateDailyTrafficForecastIframe(loc.name);
         if (selectedDate) {
-            fetch('http://172.20.10.6:8080/api/city-data')
+            fetch(backend_ip)
                 .then(response => response.json())
                 .then(data => {
                     updateForecastData(data, selectedLocation, selectedDate);
@@ -394,10 +415,7 @@ let currentSelectedLocation = '';
 
 // Fetch city points data (url change needed)
 function fetchCityData() {
-    /*fetch('http://192.168.1.6:8080/api/city-data') georgia*/
-    /*fetch('http://192.168.1.144:8080/api/city-data') giorgos*/
-    /*fetch('http://192.168.1.6:8080/api/city-data')*/
-    fetch('http://172.20.10.6:8080/api/city-data') /*atout*/
+    fetch(backend_ip)
         .then(response => response.json())
         .then(data => {
             if (currentSelectedLocation) {
@@ -478,7 +496,7 @@ searchForm.addEventListener('submit', (event) => {
     updateTrafficLocationInfo(location.name);
 
     if (selectedDate) {
-        fetch('http://172.20.10.6:8080/api/city-data')
+        fetch(backend_ip)
             .then(response => response.json())
             .then(data => {
                 updateForecastData(data, selectedLocation, selectedDate);
@@ -610,7 +628,7 @@ function setupDateButtons() {
             updateForecastDropdownButton(selectedDate); // Update dropdown button
 
             if (selectedLocation && selectedDate) {
-                fetch('http://172.20.10.6:8080/api/city-data')
+                fetch(backend_ip)
                     .then(response => response.json())
                     .then(data => {
                         updateForecastData(data, selectedLocation, selectedDate);
@@ -648,7 +666,7 @@ function setupLocationHandlers() {
                 clearForecastData();
             } 
             else {
-                fetch('http://172.20.10.6:8080/api/city-data')
+                fetch(backend_ip)
                     .then(response => response.json())
                     .then(data => {
                         updateForecastData(data, selectedLocation, selectedDate);
@@ -656,6 +674,7 @@ function setupLocationHandlers() {
                     .catch(error => console.error('Error fetching forecast data:', error));
             }
             updateTrafficForecastIframe(selectedLocation);
+            updateDailyTrafficForecastIframe(selectedLocation);
         });
     });
 }
@@ -692,9 +711,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // TRAFFIC FORECAST
 function updateTrafficForecastIframe(location) {
-    const iframe = document.querySelector('.traffic-forecast-container iframe');
+    const iframe = document.querySelector('.traffic-forecast iframe');
     if (iframe && traffic_forecast_mapping[location]) {
         iframe.src = traffic_forecast_mapping[location];
+    }
+}
+
+// DAILY TRAFFIC FORECAST
+function updateDailyTrafficForecastIframe(location) {
+    const iframe = document.querySelector('.daily-traffic-forecast iframe');
+    if (iframe && daily_traffic_forecast_mapping[location]) {
+        iframe.src = daily_traffic_forecast_mapping[location];
     }
 }
 
@@ -807,7 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedDate = button.getAttribute('date');
             updateForecastDropdownButton(selectedDate);
             if (selectedLocation && selectedDate) {
-                fetch('http://172.20.10.6:8080/api/city-data')
+                fetch(backend_ip)
                     .then(response => response.json())
                     .then(data => {
                         updateForecastData(data, selectedLocation, selectedDate);
@@ -847,6 +874,51 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+});
+
+// Add Alert
+const plusButton = document.getElementById('plusButton');
+const formContainer = document.getElementById('formContainer');
+const locationSelect = document.getElementById('locationSelect');
+const metricSelect = document.getElementById('metricSelect');
+const thresholdInput = document.getElementById('thresholdInput');
+const submitAlertButton = document.getElementById('submitAlertButton');
+const alertMessage = document.getElementById('alertMessage');
+
+plusButton.addEventListener('click', () => {
+    formContainer.classList.add('visible');
+    plusButton.style.display = 'none';
+    alertMessage.textContent = '';
+    alertMessage.className = 'alert-message'; 
+});
+
+submitAlertButton.addEventListener('click', () => {
+    if (!locationSelect.value || !metricSelect.value || !thresholdInput.value) {
+        alertMessage.textContent = 'Fields are missing.';
+        alertMessage.className = 'alert-message error';
+        return;
+    }
+
+    const alertData = {
+        location: locationSelect.value,
+        metric: metricSelect.value,
+        threshold: thresholdInput.value
+    };
+
+    console.log('Alert Data:', alertData);
+
+    // Show success message
+    alertMessage.textContent = `Alert for ${metricSelect.value} in ${locationSelect.value} with threshold: ${thresholdInput.value} is in progress.`;
+    alertMessage.className = 'alert-message success';
+    
+    // Reset form
+    locationSelect.value = '';
+    metricSelect.value = '';
+    thresholdInput.value = '';
+    
+    // Hide form and show add button
+    formContainer.classList.remove('visible');
+    plusButton.style.display = 'flex';
 });
 
 // Handle Errors 
